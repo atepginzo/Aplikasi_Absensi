@@ -31,7 +31,7 @@
                             <h3 class="text-lg font-semibold text-white">Daftar Kelas</h3>
                             <p class="text-sm text-slate-400 mt-1">Total: {{ count($semuaKelas ?? []) }} kelas</p>
                         </div>
-                        <a href="{{ route('admin.kelas.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                        <a href="{{ route('admin.kelas.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-sky-600 to-sky-500 border border-transparent rounded-xl font-semibold text-sm text-slate-50 hover:from-sky-500 hover:to-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                             </svg>
@@ -39,71 +39,126 @@
                         </a>
                     </div>
 
-                    {{-- Tabel Data --}}
-                    <div class="overflow-x-auto rounded-xl border border-slate-800">
-                        <table class="min-w-full divide-y divide-slate-800">
-                            <thead class="bg-slate-800/50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Kelas</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Wali Kelas</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Tahun Ajaran</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-slate-900/50 divide-y divide-slate-800">
-                                @forelse ($semuaKelas as $key => $kelas)
-                                    <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-medium text-slate-300">{{ $key + 1 }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                                                {{ $kelas->nama_kelas }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-slate-200 font-medium">{{ $kelas->waliKelas->nama_lengkap ?? 'N/A' }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                                {{ $kelas->tahunAjaran->tahun_ajaran ?? 'N/A' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex items-center space-x-3">
-                                                <a href="{{ route('admin.kelas.edit', $kelas->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 border border-slate-700 transition-colors">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                    </svg>
-                                                    Edit
-                                                </a>
-                                                <button type="button" 
-                                                        @click="deleteUrl = '{{ route('admin.kelas.destroy', $kelas->id) }}'; showModal = true"
-                                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 border border-red-500/30 transition-colors">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                    Hapus
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
+                    {{-- Tabel Data (Desktop) --}}
+                    <div class="hidden sm:block">
+                        <div class="overflow-x-auto rounded-xl border border-slate-800">
+                            <table class="min-w-full divide-y divide-slate-800">
+                                <thead class="bg-slate-800/50">
                                     <tr>
-                                        <td colspan="5" class="px-6 py-12 text-center">
-                                            <div class="flex flex-col items-center">
-                                                <svg class="w-16 h-16 text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                                </svg>
-                                                <p class="text-sm font-medium text-slate-400">Data tidak ditemukan.</p>
-                                                <p class="text-xs text-slate-500 mt-1">Mulai dengan menambahkan kelas baru</p>
-                                            </div>
-                                        </td>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Kelas</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Wali Kelas</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Tahun Ajaran</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
                                     </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="bg-slate-900/50 divide-y divide-slate-800">
+                                    @forelse ($semuaKelas as $key => $kelas)
+                                        <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="text-sm font-medium text-slate-300">{{ $key + 1 }}</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                                    {{ $kelas->nama_kelas }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="text-sm text-slate-200 font-medium">{{ $kelas->waliKelas->nama_lengkap ?? 'N/A' }}</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                                    {{ $kelas->tahunAjaran->tahun_ajaran ?? 'N/A' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex items-center space-x-3">
+                                                    <a href="{{ route('admin.kelas.show', $kelas->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-100 bg-slate-800/70 rounded-lg border border-slate-700 hover:bg-slate-700/70 transition-colors">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                        Detail
+                                                    </a>
+                                                    <a href="{{ route('admin.kelas.edit', $kelas->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 border border-slate-700 transition-colors">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                        </svg>
+                                                        Edit
+                                                    </a>
+                                                    <button type="button" 
+                                                            @click="deleteUrl = '{{ route('admin.kelas.destroy', $kelas->id) }}'; showModal = true"
+                                                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 border border-red-500/30 transition-colors">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <svg class="w-16 h-16 text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                    </svg>
+                                                    <p class="text-sm font-medium text-slate-400">Data tidak ditemukan.</p>
+                                                    <p class="text-xs text-slate-500 mt-1">Mulai dengan menambahkan kelas baru</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- Kartu Data (Mobile) --}}
+                    <div class="sm:hidden space-y-4">
+                        @forelse ($semuaKelas as $key => $kelas)
+                            <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-xs uppercase tracking-wide text-slate-500">Kelas</p>
+                                        <p class="text-lg font-semibold text-white">{{ $kelas->nama_kelas }}</p>
+                                    </div>
+                                    <span class="text-sm font-semibold text-slate-400">#{{ str_pad($key + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                </div>
+                                <div class="mt-4 grid grid-cols-1 gap-3">
+                                    <div class="flex items-start justify-between">
+                                        <span class="text-xs text-slate-500">Wali Kelas</span>
+                                        <span class="text-sm font-medium text-slate-200">{{ $kelas->waliKelas->nama_lengkap ?? 'Belum diatur' }}</span>
+                                    </div>
+                                    <div class="flex items-start justify-between">
+                                        <span class="text-xs text-slate-500">Tahun Ajaran</span>
+                                        <span class="text-xs inline-flex items-center px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-200 border border-emerald-500/30">{{ $kelas->tahunAjaran->tahun_ajaran ?? 'Belum diatur' }}</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-1 gap-3">
+                                    <a href="{{ route('admin.kelas.show', $kelas->id) }}" class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-slate-200 bg-slate-800/70 rounded-xl border border-slate-700 hover:bg-slate-700/70 transition">
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('admin.kelas.edit', $kelas->id) }}" class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-slate-200 bg-slate-800/70 rounded-xl border border-slate-700 hover:bg-slate-700/70 transition">
+                                        Edit
+                                    </a>
+                                    <button type="button" 
+                                            @click="deleteUrl = '{{ route('admin.kelas.destroy', $kelas->id) }}'; showModal = true"
+                                            class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-red-300 bg-red-500/10 rounded-xl border border-red-500/30 hover:bg-red-500/20 transition">
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center">
+                                <svg class="w-14 h-14 mx-auto text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                <p class="text-sm font-medium text-slate-400">Data tidak ditemukan.</p>
+                                <p class="text-xs text-slate-500 mt-1">Mulai dengan menambahkan kelas baru</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 

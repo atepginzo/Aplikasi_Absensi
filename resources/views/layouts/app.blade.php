@@ -14,6 +14,30 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            @media print {
+                body, .min-h-screen, main {
+                    background: #fff !important;
+                    color: #000 !important;
+                }
+                nav, header, .no-print, .print-hide {
+                    display: none !important;
+                }
+                .print-area {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: #fff !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                }
+                .print-container {
+                    display: block !important;
+                }
+            }
+        </style>
     </head>
    <body class="font-sans antialiased bg-neutral-950 text-slate-50">
         <div class="min-h-screen bg-neutral-950">

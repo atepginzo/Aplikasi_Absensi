@@ -28,7 +28,7 @@
                             </div>
                             
                             {{-- Scanner Container dengan Native App Styling --}}
-                            <div class="relative bg-black rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio: 1;">
+                            <div class="relative bg-black rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio: 1;" id="scanner-container">
                                 {{-- Overlay dengan Scanning Frame --}}
                                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     {{-- Scanning Frame --}}
@@ -68,6 +68,34 @@
                                         Arahkan QR Code siswa ke dalam frame
                                     </p>
                                 </div>
+                            </div>
+
+                            {{-- File Upload Section --}}
+                            <div class="mt-6">
+                                <div class="border-2 border-dashed border-slate-700 rounded-2xl p-4 text-center transition-colors hover:border-slate-600">
+                                    <input type="file" id="file-input" accept="image/*" class="hidden" />
+                                    <label for="file-input" class="cursor-pointer">
+                                        <div class="flex flex-col items-center justify-center py-4">
+                                            <svg class="w-10 h-10 text-slate-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <p class="text-sm text-slate-400">Unggah gambar QR Code</p>
+                                            <p class="text-xs text-slate-500 mt-1">Format: JPG, PNG (maks. 5MB)</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                <button id="scan-file-btn" class="mt-3 w-full inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-600 border border-slate-600 rounded-xl font-medium text-sm text-slate-200 hover:from-slate-600 hover:to-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    Scan dari File
+                                </button>
+                                <button id="back-to-dashboard" class="mt-3 w-full inline-flex items-center justify-center px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl font-medium text-sm text-slate-200 hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    </svg>
+                                    Kembali ke Dashboard
+                                </button>
                             </div>
 
                             {{-- Loading Indicator --}}
@@ -262,17 +290,158 @@
         }
 
         // INISIALISASI SCANNER
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", 
-            { 
+        const html5QrCode = new Html5Qrcode("reader");
+        
+        // Function to start the camera
+        const startCamera = () => {
+            const config = { 
                 fps: 10, 
                 qrbox: { width: 250, height: 250 },
                 aspectRatio: 1.0,
-                supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-            },
-            /* verbose= */ false
-        );
+                // Disable default UI elements
+                showTorchButtonIfSupported: false,
+                showZoomSliderIfSupported: false,
+                defaultZoomValueIfSupported: 1,
+                // Disable the default camera selection UI
+                showZoomSlider: false,
+                showTorchButton: false
+            };
+            
+            // Start with the environment-facing (back) camera by default if available
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    // Try to find a back camera first
+                    const backCamera = devices.find(device => 
+                        device.label.toLowerCase().includes('back') || 
+                        device.label.toLowerCase().includes('rear')
+                    );
+                    
+                    const cameraId = backCamera ? backCamera.id : devices[0].id;
+                    
+                    html5QrCode.start(
+                        cameraId, 
+                        config, 
+                        onScanSuccess, 
+                        onScanFailure
+                    ).catch(err => {
+                        console.error("Error starting camera:", err);
+                        // If back camera fails, try the first available camera
+                        if (backCamera && devices.length > 1) {
+                            html5QrCode.start(
+                                devices[0].id, 
+                                config, 
+                                onScanSuccess, 
+                                onScanFailure
+                            ).catch(console.error);
+                        }
+                    });
+                }
+            }).catch(console.error);
+        };
         
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        // Start the camera when the page loads
+        startCamera();
+        
+        // Add CSS to hide the default scanner UI elements
+        const style = document.createElement('style');
+        style.textContent = `
+            #reader__dashboard {
+                display: none !important;
+            }
+            #reader__dashboard_section_swaplink {
+                display: none !important;
+            }
+            #html5-qrcode-button-camera-permission {
+                display: none !important;
+            }
+            #html5-qrcode-anchor-scan-type-change {
+                display: none !important;
+            }
+            #reader__scan_region {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            #reader__dashboard_section_csr span {
+                display: none !important;
+            }
+            video {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Handle file input
+        const fileInput = document.getElementById('file-input');
+        const scanFileBtn = document.getElementById('scan-file-btn');
+        const backToDashboard = document.getElementById('back-to-dashboard');
+        
+        scanFileBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Show loading
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            isProcessing = true;
+            
+            // Use the scanner to read the file
+            const fileReader = new FileReader();
+            fileReader.onload = (event) => {
+                const imageData = event.target.result;
+                
+                // Create a temporary image element to get dimensions
+                const img = new Image();
+                img.onload = () => {
+                    // Use html5-qrcode's built-in file scanning
+                    Html5Qrcode.getCameras().then(devices => {
+                        // This is a workaround since we need a camera to be present for file scanning
+                        const html5QrCode = new Html5Qrcode("reader");
+                        
+                        html5QrCode.scanFileV2(
+                            file, // File object
+                            true  // Show the image in the scanner
+                        )
+                        .then(decodedText => {
+                            // Simulate scan success with the decoded text
+                            onScanSuccess(decodedText, { result: { text: decodedText } });
+                        })
+                        .catch(err => {
+                            console.error("Error scanning file:", err);
+                            showResult({
+                                status: 'error',
+                                message: 'Gagal membaca QR Code. Pastikan gambar jelas dan berisi QR Code yang valid.'
+                            });
+                            document.getElementById('loading-indicator').classList.add('hidden');
+                            isProcessing = false;
+                        });
+                    });
+                };
+                img.src = imageData;
+            };
+            fileReader.readAsDataURL(file);
+        });
+        
+        // Handle back to dashboard button
+        backToDashboard.addEventListener('click', () => {
+            // Stop the scanner
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => {
+                    console.log("QR Code scanning stopped.");
+                    window.location.href = "{{ route('dashboard') }}";
+                }).catch(err => {
+                    console.error("Failed to stop scanning:", err);
+                    window.location.href = "{{ route('dashboard') }}";
+                });
+            } else {
+                window.location.href = "{{ route('dashboard') }}";
+            }
+        });
     </script>
 </x-app-layout>

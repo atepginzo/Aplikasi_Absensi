@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'PKBM RIDHO') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,10 +19,10 @@
             <div class="w-full max-w-md">
                 <div class="text-center mb-8">
                     <a href="/" class="inline-block">
-                        <x-application-logo class="w-16 h-16 mx-auto text-sky-500" />
+                        <x-application-logo class="w-20 h-20 mx-auto" />
                     </a>
-                    <h1 class="mt-4 text-2xl font-semibold text-slate-50">{{ config('app.name', 'Laravel') }}</h1>
-                    <p class="mt-2 text-slate-400">Sistem Absensi Siswa</p>
+                    <h1 class="mt-4 text-2xl font-extrabold tracking-[0.3em] text-slate-50 uppercase">{{ config('app.name', 'PKBM RIDHO') }}</h1>
+                    <p class="mt-2 text-slate-400">Sistem Absensi Digital PKBM</p>
                 </div>
 
                 <div class="bg-slate-900 rounded-2xl shadow-lg border border-slate-800 p-8">

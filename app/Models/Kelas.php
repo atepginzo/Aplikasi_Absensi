@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Siswa;
 
 
 class Kelas extends Model
@@ -36,5 +37,13 @@ class Kelas extends Model
     {
         // belongsTo -> "Satu Kelas ini MILIK satu WaliKelas"
         return $this->belongsTo(WaliKelas::class);
+    }
+
+    /**
+     * Relasi ke Siswa di kelas ini.
+     */
+    public function siswa()
+    {
+        return $this->hasMany(Siswa::class);
     }
 }

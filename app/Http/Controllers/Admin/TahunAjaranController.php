@@ -63,7 +63,16 @@ class TahunAjaranController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $tahunAjaran = TahunAjaran::with([
+            'kelas' => function ($query) {
+                $query->with(['waliKelas'])->withCount('siswa')->orderBy('nama_kelas');
+            }
+        ])->findOrFail($id);
+
+        return view('admin.tahun_ajaran.show', [
+            'tahunAjaran' => $tahunAjaran,
+            'daftarKelas' => $tahunAjaran->kelas,
+        ]);
     }
 
     /**

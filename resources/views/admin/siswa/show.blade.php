@@ -15,11 +15,11 @@
             <div class="bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
                 <div class="p-8">
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 print-container">
                         
                         {{-- Bagian KIRI: Kartu QR Code --}}
                         <div class="lg:col-span-1">
-                            <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl p-8 border border-blue-500/30 shadow-lg backdrop-blur-sm">
+                            <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl p-8 border border-blue-500/30 shadow-lg backdrop-blur-sm print-area">
                                 <div class="text-center">
                                     <h3 class="text-xl font-bold text-white mb-6">Kartu Absensi</h3>
                                     
@@ -37,7 +37,7 @@
                                     </div>
 
                                     {{-- Print Button --}}
-                                    <button onclick="window.print()" class="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                                    <button onclick="window.print()" class="no-print mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 border border-transparent rounded-xl font-semibold text-sm text-white hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                                         </svg>
@@ -48,7 +48,7 @@
                         </div>
 
                         {{-- Bagian KANAN: Detail Biodata --}}
-                        <div class="lg:col-span-2">
+                        <div class="lg:col-span-2 print-hide">
                             <div class="space-y-6">
                                 {{-- Header --}}
                                 <div class="pb-6 border-b border-slate-800">

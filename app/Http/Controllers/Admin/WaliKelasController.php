@@ -53,7 +53,7 @@ class WaliKelasController extends Controller
             'name' => $request->nama_lengkap, // Kita samakan 'name' di tabel User dengan 'nama_lengkap'
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            // Nanti kita bisa tambahkan 'role' di sini
+            'role' => 'wali_kelas',
         ]);
 
         // 3. Simpan data ke tabel 'wali_kelas'

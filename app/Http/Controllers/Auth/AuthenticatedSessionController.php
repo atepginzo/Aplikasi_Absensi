@@ -28,7 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        $targetRoute = match ($user?->role) {
+            'wali_kelas' => 'wali.dashboard',
+            default => 'dashboard',
+        };
+
+        return redirect()->intended(route($targetRoute, absolute: false));
     }
 
     /**
