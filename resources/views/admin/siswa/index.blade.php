@@ -26,7 +26,7 @@
                     @endif
 
                     {{-- Header dengan Tombol Tambah --}}
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
                         <div>
                             <h3 class="text-lg font-semibold text-slate-50">Daftar Siswa</h3>
                             <p class="text-sm text-slate-400 mt-1">Total: {{ count($semuaSiswa ?? []) }} siswa</p>
@@ -38,6 +38,33 @@
                             Tambah Siswa
                         </a>
                     </div>
+
+                    {{-- Filter Kelas --}}
+                    <form method="GET" action="{{ route('admin.siswa.index') }}" class="mb-6">
+                        <div class="flex flex-col sm:flex-row sm:items-end gap-4 bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+                            <div class="w-full sm:w-1/3">
+                                <label for="kelas_id" class="block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Pilih Kelas</label>
+                                <select name="kelas_id" id="kelas_id" class="w-full rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:border-sky-500 focus:ring-sky-500">
+                                    <option value="">Semua Kelas</option>
+                                    @foreach ($semuaKelas as $kelas)
+                                        <option value="{{ $kelas->id }}" {{ (string) $kelas->id === (string) ($kelasDipilih ?? '') ? 'selected' : '' }}>
+                                            {{ $kelas->nama_kelas }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex gap-3">
+                                <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-sky-600 text-sm font-semibold text-white rounded-xl border border-sky-500 hover:bg-sky-500 transition">
+                                    Filter
+                                </button>
+                                @if (request('kelas_id'))
+                                    <a href="{{ route('admin.siswa.index') }}" class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-slate-300 rounded-xl border border-slate-700 hover:bg-slate-800 transition">
+                                        Reset
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
 
                     {{-- Tabel Data untuk layar menengah ke atas --}}
                     <div class="hidden sm:block">

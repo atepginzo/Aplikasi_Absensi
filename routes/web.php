@@ -55,7 +55,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('siswa', SiswaController::class);
     // Rute Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/bulanan', [LaporanController::class, 'bulanan'])->name('laporan.bulanan');
     Route::get('/laporan/{kelas}/export', [LaporanController::class, 'exportPdf'])->name('laporan.export');
+    Route::get('/laporan/{kelas}/tanggal/{tanggal}', [LaporanController::class, 'detail'])->name('laporan.detail');
     Route::get('/laporan/{kelas}', [LaporanController::class, 'show'])->name('laporan.show');
 
 });
@@ -78,6 +80,8 @@ Route::middleware(['auth', 'role:wali_kelas'])->prefix('wali-kelas')->name('wali
     Route::get('/dashboard', [WaliDashboardController::class, 'index'])->name('dashboard');
     Route::get('/laporan', [WaliLaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/{kelas}', [WaliLaporanController::class, 'show'])->name('laporan.show');
+    Route::get('/laporan/{kelas}/detail/{tanggal}', [WaliLaporanController::class, 'detail'])->name('laporan.detail');
+    Route::get('/laporan/{kelas}/export', [WaliLaporanController::class, 'exportPdf'])->name('laporan.export');
 });
 // ==============================================
 // == AKHIR GRUP RUTE ADMIN ==

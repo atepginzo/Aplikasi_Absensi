@@ -85,8 +85,8 @@
                                     <label for="tanggal_lahir" class="block text-sm font-semibold text-slate-200 mb-2">
                                         Tanggal Lahir <span class="text-red-400">*</span>
                                     </label>
-                                    <input id="tanggal_lahir" 
-                                           class="block w-full rounded-xl bg-slate-800/50 border border-slate-700 text-slate-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 text-sm px-4 py-2.5" 
+                                     <input id="tanggal_lahir" 
+                                         class="block w-full rounded-xl bg-slate-800/50 border border-slate-700 text-slate-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 text-sm px-4 py-2.5 [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:cursor-pointer" 
                                            type="date" 
                                            name="tanggal_lahir" 
                                            value="{{ old('tanggal_lahir', $waliKelas->tanggal_lahir) }}" 

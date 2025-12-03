@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="font-bold text-3xl text-slate-50 leading-tight">
-                    {{ __('Dashboard Admin') }}
+                    {{ $isAdmin ? 'Dashboard Admin' : 'Dashboard Wali Kelas' }}
                 </h2>
             </div>
         </div>
@@ -31,6 +31,7 @@
             </div>
 
             {{-- Grid Statistik --}}
+            @if ($isAdmin)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 
                 <!-- Card 1: Jumlah Siswa -->
@@ -114,36 +115,112 @@
                 </div>
 
             </div>
-
-            {{-- Tombol Cepat (Quick Actions) --}}
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-6">
+            @else
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="group relative rounded-2xl border border-slate-800 bg-slate-900/80 p-6 overflow-hidden hover:border-sky-500/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                    <div class="relative flex items-center justify-between">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-50">Menu Cepat</h3>
-                            <p class="text-sm text-slate-400 mt-1">Akses cepat ke fitur utama</p>
+                            <p class="text-sm font-medium text-slate-400 mb-2">Kelas Anda</p>
+                            <p class="text-4xl font-bold text-slate-50">{{ $jumlahKelasDiampu }}</p>
+                            <p class="text-xs text-slate-500 mt-2">Total kelas binaan aktif</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-sky-500/15 border border-sky-500/30">
+                            <svg class="w-10 h-10 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16M7 7v10M17 7v10" />
+                            </svg>
                         </div>
                     </div>
-                    <div class="flex flex-wrap gap-4">
-                        {{-- Link ke Scanner --}}
-                        <a href="{{ route('admin.absensi.scan') }}" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-sky-600 to-sky-500 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-wide hover:from-sky-500 hover:to-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-                            <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                </div>
+                <div class="group relative rounded-2xl border border-slate-800 bg-slate-900/80 p-6 overflow-hidden hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-400 mb-2">Total Siswa</p>
+                            <p class="text-4xl font-bold text-slate-50">{{ $totalSiswaDiampu }}</p>
+                            <p class="text-xs text-slate-500 mt-2">Akumulasi seluruh kelas</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30">
+                            <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
                             </svg>
-                            Buka Scanner Absensi
-                        </a>
-                        
-                        {{-- Link ke Tambah Siswa --}}
-                        <a href="{{ route('admin.siswa.create') }}" class="group inline-flex items-center px-6 py-3 bg-slate-900 border-2 border-slate-700 rounded-xl font-semibold text-sm text-slate-50 uppercase tracking-wide hover:border-sky-500 hover:text-sky-300 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-                            <svg class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </div>
+                    </div>
+                </div>
+                <div class="group relative rounded-2xl border border-slate-800 bg-slate-900/80 p-6 overflow-hidden hover:border-sky-500/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-400 mb-2">Hadir Hari Ini</p>
+                            <p class="text-4xl font-bold text-slate-50">{{ $hadirHariIni }}</p>
+                            <p class="text-xs text-slate-500 mt-2">Siswa hadir di kelas Anda</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-sky-500/15 border border-sky-500/30">
+                            <svg class="w-10 h-10 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Tambah Siswa Baru
-                        </a>
-
+                        </div>
                     </div>
                 </div>
             </div>
+            @endif
+
+            {{-- Area Bawah: Quick Menu atau Info Kelas --}}
+            @if ($isAdmin)
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-50">Menu Cepat</h3>
+                                <p class="text-sm text-slate-400 mt-1">Akses cepat ke fitur utama</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4">
+                            <a href="{{ route('admin.absensi.scan') }}" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-sky-600 to-sky-500 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-wide hover:from-sky-500 hover:to-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                                <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                </svg>
+                                Buka Scanner Absensi
+                            </a>
+                            <a href="{{ route('admin.siswa.create') }}" class="group inline-flex items-center px-6 py-3 bg-slate-900 border-2 border-slate-700 rounded-xl font-semibold text-sm text-slate-50 uppercase tracking-wide hover:border-sky-500 hover:text-sky-300 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                                <svg class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                </svg>
+                                Tambah Siswa Baru
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-50">Kelas Binaan Anda</h3>
+                                <p class="text-sm text-slate-400 mt-1">Total Siswa: <span class="text-slate-100 font-semibold">{{ $totalSiswaDiampu }}</span></p>
+                            </div>
+                        </div>
+                        @if ($kelasDiampu->isEmpty())
+                            <div class="text-center py-8 text-slate-400 text-sm">
+                                Belum ada kelas yang terhubung ke akun Anda.
+                            </div>
+                        @else
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                @foreach ($kelasDiampu as $kelas)
+                                    <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-5 hover:border-sky-500/50 transition">
+                                        <p class="text-xs uppercase tracking-wide text-slate-500">Kelas</p>
+                                        <p class="text-xl font-semibold text-slate-50 mb-3">{{ $kelas->nama_kelas }}</p>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-slate-400">Jumlah Siswa</span>
+                                            <span class="text-2xl font-bold text-sky-400">{{ $kelas->siswa_count }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
         </div>
     </div>

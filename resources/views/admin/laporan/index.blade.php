@@ -1,10 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
                 <h2 class="font-bold text-2xl text-slate-50 leading-tight">Laporan Kehadiran</h2>
                 <p class="mt-1 text-sm text-slate-400">Pilih kelas untuk melihat rekap absensi per tanggal</p>
             </div>
+            <a href="{{ route('admin.laporan.bulanan') }}" class="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-sky-600 rounded-xl hover:bg-sky-500 transition">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8m6 0a10 10 0 11-20 0 10 10 0 0120 0z" />
+                </svg>
+                Rekap Bulanan
+            </a>
         </div>
     </x-slot>
 

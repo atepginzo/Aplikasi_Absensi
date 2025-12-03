@@ -13,14 +13,22 @@ class SiswaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $semuaSiswa = Siswa::with(['kelas.waliKelas'])
-                                ->orderBy('nama_siswa', 'asc')
-                                ->get();
-                                
+        $query = Siswa::with(['kelas.waliKelas'])
+                      ->orderBy('nama_siswa', 'asc');
+
+        if ($request->filled('kelas_id')) {
+            $query->where('kelas_id', $request->kelas_id);
+        }
+
+        $semuaSiswa = $query->get();
+        $semuaKelas = Kelas::orderBy('nama_kelas', 'asc')->get();
+
         return view('admin.siswa.index', [
-            'semuaSiswa' => $semuaSiswa
+            'semuaSiswa' => $semuaSiswa,
+            'semuaKelas' => $semuaKelas,
+            'kelasDipilih' => $request->kelas_id,
         ]);
     }
 
