@@ -25,10 +25,9 @@ class Kelas extends Model
         return $this->belongsTo(WaliKelas::class);
     }
 
-    // --- TAMBAHKAN INI (RELASI KE SISWA) ---
-    public function siswas()
+    // Relasi ke Siswa: satu kelas memiliki banyak siswa
+    public function siswa()
     {
-        // hasMany = Satu Kelas punya BANYAK Siswa
         return $this->hasMany(Siswa::class);
     }
 }

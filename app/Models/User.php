@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(WaliKelas::class);
     }
+
+    public function siswa()
+    {
+        return $this->hasOne(Siswa::class, 'parent_user_id');
+    }
 }

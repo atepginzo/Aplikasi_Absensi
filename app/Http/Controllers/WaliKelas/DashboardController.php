@@ -36,7 +36,7 @@ class DashboardController extends Controller
             })
             ->count();
 
-        $kelasDiampu = Kelas::withCount('siswas as siswa_count')
+        $kelasDiampu = Kelas::withCount('siswa as siswa_count')
             ->where('wali_kelas_id', $wali->id)
             ->orderBy('nama_kelas', 'asc')
             ->get();

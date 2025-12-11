@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Exports\SiswaTemplateExport;
+use App\Imports\SiswaImport;
 use App\Models\Siswa;
 use App\Models\Kelas; // <-- Tambahkan model Kelas
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str; // <-- Tambahkan helper Str untuk UUID
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SiswaController extends Controller
 {
@@ -57,19 +63,36 @@ class SiswaController extends Controller
             'nis' => 'required|string|max:20|unique:siswas,nis',
             'nama_siswa' => 'required|string|max:100',
             'jenis_kelamin' => 'required|in:L,P',
+            'parent_email' => 'nullable|email|unique:users,email',
+            'parent_password' => 'nullable|string|min:8',
         ]);
 
-        // 2. Simpan Data
+        // 2. Buat akun orang tua (jika diisi)
+        $parentUserId = null;
+
+        if ($request->filled('parent_email')) {
+            $parentUser = User::create([
+                'name' => $request->nama_siswa.' - Orang Tua',
+                'email' => $request->parent_email,
+                'password' => Hash::make($request->parent_password ?: Str::random(12)),
+                'role' => 'orang_tua',
+            ]);
+
+            $parentUserId = $parentUser->id;
+        }
+
+        // 3. Simpan Data Siswa
         // Kita generate UUID untuk qrcode_token di sini
         Siswa::create([
             'kelas_id' => $request->kelas_id,
+            'parent_user_id' => $parentUserId,
             'nis' => $request->nis,
             'nama_siswa' => $request->nama_siswa,
             'jenis_kelamin' => $request->jenis_kelamin,
             'qrcode_token' => (string) Str::uuid(), // <-- Magic happens here!
         ]);
 
-        // 3. Redirect
+        // 4. Redirect
         return redirect()->route('admin.siswa.index')
                          ->with('success', 'Siswa berhasil ditambahkan.');
     }
@@ -114,20 +137,104 @@ class SiswaController extends Controller
             'nis' => 'required|string|max:20|unique:siswas,nis,'.$siswa->id,
             'nama_siswa' => 'required|string|max:100',
             'jenis_kelamin' => 'required|in:L,P',
+            'parent_email' => [
+                'nullable',
+                'email',
+                Rule::unique('users', 'email')->ignore(optional($siswa->orangTua)->id),
+            ],
+            'parent_password' => 'nullable|string|min:8',
         ]);
 
-        // 2. Update data
+        // 2. Update / buat akun orang tua jika diperlukan
+        $parentEmail = $request->input('parent_email');
+        $parentPassword = $request->input('parent_password');
+
+        $orangTua = $siswa->orangTua;
+
+        if ($parentEmail) {
+            // Jika belum punya akun orang tua -> buat baru
+            if (! $orangTua) {
+                $orangTua = User::create([
+                    'name' => $request->nama_siswa.' - Orang Tua',
+                    'email' => $parentEmail,
+                    'password' => Hash::make($parentPassword ?: Str::random(12)),
+                    'role' => 'orang_tua',
+                ]);
+
+                $siswa->parent_user_id = $orangTua->id;
+            } else {
+                // Sudah punya akun orang tua -> update data
+                $orangTua->email = $parentEmail;
+
+                if ($parentPassword) {
+                    $orangTua->password = Hash::make($parentPassword);
+                }
+
+                $orangTua->save();
+            }
+        }
+
+        // 3. Update data siswa
         // Kita TIDAK mengupdate 'qrcode_token' agar QR code lama tetap valid
-        $siswa->update([
-            'kelas_id' => $request->kelas_id,
-            'nis' => $request->nis,
-            'nama_siswa' => $request->nama_siswa,
-            'jenis_kelamin' => $request->jenis_kelamin,
-        ]);
+        $siswa->kelas_id = $request->kelas_id;
+        $siswa->nis = $request->nis;
+        $siswa->nama_siswa = $request->nama_siswa;
+        $siswa->jenis_kelamin = $request->jenis_kelamin;
 
-        // 3. Redirect kembali ke index
+        $siswa->save();
+
+        // 4. Redirect kembali ke index
         return redirect()->route('admin.siswa.index')
                          ->with('success', 'Data siswa berhasil diperbarui.');
+    }
+
+    /**
+     * Import data siswa dari file Excel.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file_import' => 'required|file|mimes:xlsx,xls,csv',
+        ], [
+            'file_import.required' => 'Silakan pilih file Excel terlebih dahulu.',
+            'file_import.mimes' => 'Format file harus .xlsx, .xls, atau .csv.',
+        ]);
+
+        $import = new SiswaImport();
+
+        try {
+            $import->import($request->file('file_import'));
+        } catch (\Throwable $th) {
+            return back()->with('error', 'Terjadi kesalahan saat memproses file: '.$th->getMessage());
+        }
+
+        $successCount = $import->successCount;
+        $message = "Berhasil mengimport {$successCount} data siswa.";
+
+        if ($import->failures()->isNotEmpty()) {
+            $failures = $import->failures()->map(function ($failure) {
+                return [
+                    'row' => $failure->row(),
+                    'errors' => $failure->errors(),
+                    'values' => $failure->values(),
+                ];
+            })->toArray();
+
+            return back()->with([
+                'success' => $message.' Beberapa baris dilewati karena data tidak valid.',
+                'import_failures' => $failures,
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    /**
+     * Download template import siswa.
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new SiswaTemplateExport(), 'template_import_siswa.xlsx');
     }
 
 

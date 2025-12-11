@@ -16,6 +16,8 @@ class Siswa extends Model
      */
     protected $fillable = [
         'kelas_id',
+        'user_id',
+        'parent_user_id',
         'nis',
         'nama_siswa',
         'jenis_kelamin',
@@ -29,5 +31,15 @@ class Siswa extends Model
     {
         // "Satu Siswa ini MILIK satu Kelas"
         return $this->belongsTo(Kelas::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function orangTua()
+    {
+        return $this->belongsTo(User::class, 'parent_user_id');
     }
 }

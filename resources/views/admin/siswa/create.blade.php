@@ -92,6 +92,41 @@
                             </div>
                         </div>
 
+                        <!-- Akun Orang Tua -->
+                        <div class="mt-8 rounded-2xl border border-slate-800 bg-slate-950/60 p-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-sm font-semibold text-slate-100">Akun Orang Tua</h3>
+                                    <p class="text-xs text-slate-400 mt-1">Opsional. Isi jika ingin langsung membuat akun login untuk orang tua siswa ini.</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="parent_email" class="block text-sm font-semibold text-slate-200 mb-2">
+                                        Email Orang Tua
+                                    </label>
+                                    <input id="parent_email"
+                                           class="block w-full rounded-xl bg-slate-800/50 border border-slate-700 text-slate-200 placeholder-slate-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 text-sm px-4 py-2.5"
+                                           type="email"
+                                           name="parent_email"
+                                           value="{{ old('parent_email') }}"
+                                           placeholder="contoh: ortu.siswa@example.com" />
+                                </div>
+
+                                <div>
+                                    <label for="parent_password" class="block text-sm font-semibold text-slate-200 mb-2">
+                                        Password Akun Orang Tua
+                                    </label>
+                                    <input id="parent_password"
+                                           class="block w-full rounded-xl bg-slate-800/50 border border-slate-700 text-slate-200 placeholder-slate-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 text-sm px-4 py-2.5"
+                                           type="password"
+                                           name="parent_password"
+                                           placeholder="Minimal 8 karakter" />
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Info QR Code (Otomatis) -->
                         <div class="mt-6 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl backdrop-blur-sm">
                             <div class="flex items-start">

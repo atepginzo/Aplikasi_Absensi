@@ -2,10 +2,28 @@
     @php
         $role = Auth::user()->role ?? null;
         $isAdmin = $role === 'admin';
-        $dashboardRouteName = $isAdmin ? 'dashboard' : 'wali.dashboard';
-        $dashboardPattern = $isAdmin ? 'dashboard' : 'wali.dashboard';
-        $laporanRouteName = $isAdmin ? 'admin.laporan.index' : 'wali.laporan.index';
-        $laporanPattern = $isAdmin ? 'admin.laporan.*' : 'wali.laporan.*';
+        $isWali = $role === 'wali_kelas';
+        $isOrangTua = $role === 'orang_tua';
+
+        $dashboardRouteName = match (true) {
+            $isAdmin => 'dashboard',
+            $isWali => 'wali.dashboard',
+            $isOrangTua => 'orang-tua.dashboard',
+            default => 'dashboard',
+        };
+
+        $dashboardPattern = $dashboardRouteName;
+
+        if ($isAdmin) {
+            $laporanRouteName = 'admin.laporan.index';
+            $laporanPattern = 'admin.laporan.*';
+        } elseif ($isWali) {
+            $laporanRouteName = 'wali.laporan.index';
+            $laporanPattern = 'wali.laporan.*';
+        } else {
+            $laporanRouteName = null;
+            $laporanPattern = null;
+        }
     @endphp
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,7 +81,7 @@
                         </x-nav-link>
                     @endif
 
-                    @if (! $isAdmin)
+                    @if ($isWali)
                         <x-nav-link :href="route('admin.absensi.scan')" :active="request()->routeIs('admin.absensi.scan')" class="px-3 py-2 text-sm rounded-lg transition-all duration-200 hover:bg-slate-800/50">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7V5a2 2 0 012-2h2M4 17v2a2 2 0 002 2h2m8 0h2a2 2 0 002-2v-2m0-8V5a2 2 0 00-2-2h-2M9 12h6m-3-3v6"></path>
@@ -72,6 +90,7 @@
                         </x-nav-link>
                     @endif
 
+                    @if ($isAdmin || $isWali)
                     <x-nav-link :href="route('admin.absensi.manual.index')" :active="request()->routeIs('admin.absensi.manual.*')" class="px-3 py-2 text-sm rounded-lg transition-all duration-200 hover:bg-slate-800/50 whitespace-nowrap">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -79,12 +98,15 @@
                         {{ __('Input Manual') }}
                     </x-nav-link>
 
+                    @if ($laporanRouteName)
                     <x-nav-link :href="route($laporanRouteName)" :active="request()->routeIs($laporanPattern)" class="px-3 py-2 text-sm rounded-lg transition-all duration-200 hover:bg-slate-800/50">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6m2 4H7m5 8v-4m4 4v-6m-8 6v-2m4-8h.01M5 5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z" />
                         </svg>
                         {{ __('Laporan') }}
                     </x-nav-link>
+                    @endif
+                    @endif
                 </div>
             </div>
 
@@ -186,7 +208,7 @@
                 </x-responsive-nav-link>
             @endif
 
-            @if (! $isAdmin)
+            @if ($isWali)
                 <x-responsive-nav-link :href="route('admin.absensi.scan')" :active="request()->routeIs('admin.absensi.scan')" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7V5a2 2 0 012-2h2M4 17v2a2 2 0 002 2h2m8 0h2a2 2 0 002-2v-2m0-8V5a2 2 0 00-2-2h-2M9 12h6m-3-3v6"></path>
@@ -195,19 +217,23 @@
                 </x-responsive-nav-link>
             @endif
 
+            @if ($isAdmin || $isWali)
             <x-responsive-nav-link :href="route('admin.absensi.manual.index')" :active="request()->routeIs('admin.absensi.manual.*')" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-colors">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
                 {{ __('Input Manual') }}
             </x-responsive-nav-link>
+            @endif
 
+            @if ($laporanRouteName)
             <x-responsive-nav-link :href="route($laporanRouteName)" :active="request()->routeIs($laporanPattern)" class="flex items-center">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6m2 4H7m5 8v-4m4 4v-6m-8 6v-2m4-8h.01M5 5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z" />
                 </svg>
                 {{ __('Laporan') }}
             </x-responsive-nav-link>
+            @endif
             
         </div>
 

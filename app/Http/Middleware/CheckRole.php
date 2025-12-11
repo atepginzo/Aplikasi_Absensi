@@ -41,6 +41,7 @@ class CheckRole
         return match ($role) {
             'admin' => redirect()->route('dashboard')->with('status', 'Anda tidak memiliki akses ke halaman tersebut.'),
             'wali_kelas' => redirect()->route('wali.dashboard')->with('status', 'Anda tidak memiliki akses ke halaman tersebut.'),
+            'orang_tua' => redirect()->route('orang-tua.dashboard')->with('status', 'Anda tidak memiliki akses ke halaman tersebut.'),
             default => redirect()->route('login'),
         };
     }

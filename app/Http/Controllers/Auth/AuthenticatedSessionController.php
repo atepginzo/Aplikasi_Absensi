@@ -32,6 +32,7 @@ class AuthenticatedSessionController extends Controller
 
         $targetRoute = match ($user?->role) {
             'wali_kelas' => 'wali.dashboard',
+            'orang_tua' => 'orang-tua.dashboard',
             default => 'dashboard',
         };
 

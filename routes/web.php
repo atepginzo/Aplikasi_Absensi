@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\ManualAbsensiController;
 use App\Http\Controllers\WaliKelas\DashboardController as WaliDashboardController;
 use App\Http\Controllers\WaliKelas\LaporanController as WaliLaporanController;
+use App\Http\Controllers\OrangTua\OrangTuaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('tahun-ajaran', TahunAjaranController::class);
     Route::resource('wali-kelas', WaliKelasController::class);
     Route::resource('kelas', KelasController::class);
+    Route::get('siswa/template', [SiswaController::class, 'downloadTemplate'])->name('siswa.template');
+    Route::post('siswa/import', [SiswaController::class, 'import'])->name('siswa.import');
     Route::resource('siswa', SiswaController::class);
     // Rute Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
@@ -82,6 +85,13 @@ Route::middleware(['auth', 'role:wali_kelas'])->prefix('wali-kelas')->name('wali
     Route::get('/laporan/{kelas}', [WaliLaporanController::class, 'show'])->name('laporan.show');
     Route::get('/laporan/{kelas}/detail/{tanggal}', [WaliLaporanController::class, 'detail'])->name('laporan.detail');
     Route::get('/laporan/{kelas}/export', [WaliLaporanController::class, 'exportPdf'])->name('laporan.export');
+});
+
+// ==============================================
+// == DASHBOARD ORANG TUA ==
+// ==============================================
+Route::middleware(['auth', 'role:orang_tua'])->prefix('orang-tua')->name('orang-tua.')->group(function () {
+    Route::get('/dashboard', [OrangTuaController::class, 'dashboard'])->name('dashboard');
 });
 // ==============================================
 // == AKHIR GRUP RUTE ADMIN ==
