@@ -65,7 +65,9 @@ class TahunAjaranController extends Controller
     {
         $tahunAjaran = TahunAjaran::with([
             'kelas' => function ($query) {
-                $query->with(['waliKelas'])->withCount('siswa')->orderBy('nama_kelas');
+                $query->with(['waliKelas'])
+                    ->withCount(['siswas as siswa_count'])
+                    ->orderBy('nama_kelas');
             }
         ])->findOrFail($id);
 

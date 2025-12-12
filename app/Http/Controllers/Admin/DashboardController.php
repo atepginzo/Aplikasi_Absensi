@@ -58,7 +58,7 @@ class DashboardController extends Controller
         $totalSiswaDiampu = 0;
 
         if ($wali && !$isAdmin) {
-            $kelasDiampu = Kelas::withCount('siswa')
+            $kelasDiampu = Kelas::withCount('siswas as siswa_count')
                 ->where('wali_kelas_id', $wali->id)
                 ->orderBy('nama_kelas', 'asc')
                 ->get();
