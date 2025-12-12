@@ -24,12 +24,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     
     // ==============================================
-    // == RUTE REGISTER (YANG ANDA BUTUHKAN) ==
+    // == RUTE REGISTER (DINONAKTIFKAN) ==
     // ==============================================
-    Route::get('register', [RegisteredUserController::class, 'create'])
-                ->name('register');
+    // Route::get('register', [RegisteredUserController::class, 'create'])
+    //             ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Route::post('register', [RegisteredUserController::class, 'store']);
     // ==============================================
     // == AKHIR RUTE REGISTER ==
     // ==============================================

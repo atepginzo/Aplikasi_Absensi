@@ -2,7 +2,6 @@
 
 // DAFTAR IMPORT UNTUK web.php
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\ProfileController;
 
 // Import SEMUA controller admin Anda
@@ -27,9 +26,9 @@ use App\Http\Controllers\OrangTua\OrangTuaController;
 |
 */
 
-// Rute Halaman Utama (/) -> Arahkan ke Login
+// Rute Halaman Utama (/) -> Landing Page Welcome
 Route::get('/', function () {
-    return Redirect::to('/login');
+    return view('welcome');
 });
 
 // Rute Dashboard Bawaan Breeze
