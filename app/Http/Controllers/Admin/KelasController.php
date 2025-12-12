@@ -82,13 +82,13 @@ class KelasController extends Controller
      */
     public function show(Kelas $kela)
     {
-        $kela->load(['waliKelas', 'tahunAjaran', 'siswa' => function ($query) {
+        $kela->load(['waliKelas', 'tahunAjaran', 'siswas' => function ($query) {
             $query->orderBy('nama_siswa');
         }]);
 
         return view('admin.kelas.show', [
             'kelas' => $kela,
-            'daftarSiswa' => $kela->siswa,
+            'daftarSiswa' => $kela->siswas,
         ]);
     }
 

@@ -26,7 +26,7 @@ class Kelas extends Model
     }
 
     // Relasi ke Siswa: satu kelas memiliki banyak siswa
-    public function siswa()
+    public function siswas()
     {
         return $this->hasMany(Siswa::class);
     }

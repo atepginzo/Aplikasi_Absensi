@@ -149,7 +149,7 @@ class LaporanController extends Controller
         $kelas = Kelas::with([
             'waliKelas',
             'tahunAjaran',
-            'siswa' => function ($query) {
+            'siswas' => function ($query) {
                 $query->orderBy('nama_siswa', 'asc');
             },
         ])->findOrFail($kelasId);
@@ -160,7 +160,7 @@ class LaporanController extends Controller
             abort(404);
         }
 
-        $siswaIds = $kelas->siswa->pluck('id');
+        $siswaIds = $kelas->siswas->pluck('id');
         $kehadiranPadaTanggal = Kehadiran::whereDate('tanggal', $tanggalParsed->toDateString())
             ->whereIn('siswa_id', $siswaIds)
             ->get()
@@ -171,7 +171,7 @@ class LaporanController extends Controller
             'tanggal' => $tanggalParsed->toDateString(),
             'tanggalLabel' => $tanggalParsed->translatedFormat('l, d F Y'),
             'kehadiranPadaTanggal' => $kehadiranPadaTanggal,
-            'daftarSiswa' => $kelas->siswa,
+            'daftarSiswa' => $kelas->siswas,
         ]);
     }
 }
