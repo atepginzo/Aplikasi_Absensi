@@ -1,0 +1,69 @@
+# Konfigurasi Railway (Nixpacks) untuk Laravel + Nginx
+
+[phases.setup]
+nixPkgs = ["php82", "php82Extensions.mysql_pdo", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.bcmath", "nginx", "nodejs", "yarn"]
+
+[phases.build]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-interaction --no-progress",
+    "npm install",
+    "npm run build",
+    "php artisan config:cache",
+    "php artisan route:cache",
+    "php artisan view:cache"
+]
+
+[start]
+cmd = "echo 'Starting Nginx + PHP-FPM...' && chmod -R 777 storage bootstrap/cache && php-fpm -D && nginx -c /assets/nginx.conf"
+
+[staticAssets]
+"nginx.conf" = '''
+worker_processes 5;
+daemon off;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    client_max_body_size 10M;
+
+    server {
+        listen 0.0.0.0:${PORT};
+        root /app/public;
+        index index.php index.html;
+        charset utf-8;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+        location = /robots.txt  { access_log off; log_not_found off; }
+
+        location ~ \.php$ {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+        location ~ /\.(?!well-known).* {
+            deny all;
+        }
+    }
+}
+'''
+```
+
+#### 3. Update Start Command di Railway (PENTING!)
+Karena `nixpacks.toml` di atas sudah mendefinisikan perintah `start` sendiri (menyalakan Nginx), Anda harus **MENGHAPUS** Start Command manual yang ada di Settings Railway.
+
+1.  Push file `nixpacks.toml` ke GitHub:
+    ```bash
+    git add nixpacks.toml
+    git commit -m "Switch to Nginx Web Server"
+    git push origin main
