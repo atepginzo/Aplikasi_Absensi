@@ -1,4 +1,4 @@
-# Konfigurasi Railway (Nixpacks) untuk Laravel + Nginx
+# Konfigurasi Railway (Nixpacks) Laravel + Nginx + Tuning PHP-FPM
 
 [phases.setup]
 nixPkgs = ["php82", "php82Extensions.mysql_pdo", "php82Extensions.gd", "php82Extensions.zip", "php82Extensions.bcmath", "nginx", "nodejs", "yarn"]
@@ -14,12 +14,17 @@ cmds = [
 ]
 
 [start]
-cmd = "echo 'Starting Nginx + PHP-FPM...' && chmod -R 777 storage bootstrap/cache && php-fpm -D && nginx -c /assets/nginx.conf"
+# Menggunakan file konfigurasi custom yang kita buat di bawah
+cmd = "echo 'Starting Optimized Nginx + PHP-FPM...' && chmod -R 777 storage bootstrap/cache && php-fpm -y /assets/php-fpm.conf && nginx -c /assets/nginx.conf"
 
 [staticAssets]
+
+# 1. Konfigurasi NGINX (Web Server)
 "nginx.conf" = '''
-worker_processes 5;
+worker_processes auto;
 daemon off;
+error_log /dev/stderr warn;
+pid /var/run/nginx.pid;
 
 events {
     worker_connections 1024;
@@ -30,7 +35,8 @@ http {
     default_type application/octet-stream;
     sendfile on;
     keepalive_timeout 65;
-    client_max_body_size 10M;
+    client_max_body_size 20M; # Upload limit dinaikkan
+    access_log off; # Matikan log akses biar disk hemat & cepat
 
     server {
         listen 0.0.0.0:${PORT};
@@ -45,6 +51,11 @@ http {
         location = /favicon.ico { access_log off; log_not_found off; }
         location = /robots.txt  { access_log off; log_not_found off; }
 
+        # Tuning Timeout Nginx (Biar gak layar putih)
+        fastcgi_read_timeout 300;
+        fastcgi_connect_timeout 300;
+        fastcgi_send_timeout 300;
+
         location ~ \.php$ {
             fastcgi_pass 127.0.0.1:9000;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
@@ -57,13 +68,47 @@ http {
     }
 }
 '''
+
+# 2. Konfigurasi PHP-FPM POOL (Manajemen Worker/RAM)
+"php-fpm.conf" = '''
+[global]
+error_log = /dev/stderr
+
+[www]
+listen = 127.0.0.1:9000
+user = root
+group = root
+pm = dynamic
+; PENTING: Batasi jumlah anak proses agar RAM tidak penuh
+; Asumsi RAM 512MB: 5 worker x ~60MB = ~300MB (Aman)
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+pm.max_requests = 500
+clear_env = no
+catch_workers_output = yes
+'''
+
+# 3. Konfigurasi PHP.INI (Settingan Internal PHP)
+"php.ini" = '''
+date.timezone = "Asia/Jakarta"
+memory_limit = 256M
+upload_max_filesize = 20M
+post_max_size = 20M
+max_execution_time = 300
+opcache.enable=1
+opcache.validate_timestamps=0
+opcache.memory_consumption=128
+opcache.max_accelerated_files=10000
+'''
 ```
 
-#### 3. Update Start Command di Railway (PENTING!)
-Karena `nixpacks.toml` di atas sudah mendefinisikan perintah `start` sendiri (menyalakan Nginx), Anda harus **MENGHAPUS** Start Command manual yang ada di Settings Railway.
+### 🚀 Cara Update
 
-1.  Push file `nixpacks.toml` ke GitHub:
+1.  **Simpan** kode di atas ke file `nixpacks.toml` Anda (timpa yang lama).
+2.  **Push** ke GitHub:
     ```bash
     git add nixpacks.toml
-    git commit -m "Switch to Nginx Web Server"
+    git commit -m "Tuning PHP-FPM dan Nginx agar tidak delay"
     git push origin main
