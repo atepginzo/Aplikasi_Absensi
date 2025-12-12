@@ -28,7 +28,7 @@ class SiswaController extends Controller
             $query->where('kelas_id', $request->kelas_id);
         }
 
-        $semuaSiswa = $query->get();
+        $semuaSiswa = $query->paginate(10)->withQueryString();
         $semuaKelas = Kelas::orderBy('nama_kelas', 'asc')->get();
 
         return view('admin.siswa.index', [

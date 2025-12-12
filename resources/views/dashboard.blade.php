@@ -182,6 +182,12 @@
                                 </svg>
                                 Buka Scanner Absensi
                             </a>
+                            <a href="{{ route('admin.absensi.gun') }}" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-wide hover:from-cyan-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                                <svg class="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-4-4 4 4-4 4" />
+                                </svg>
+                                Gun Scanner (Alat)
+                            </a>
                             <a href="{{ route('admin.siswa.create') }}" class="group inline-flex items-center px-6 py-3 bg-slate-900 border-2 border-slate-700 rounded-xl font-semibold text-sm text-slate-50 uppercase tracking-wide hover:border-sky-500 hover:text-sky-300 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                                 <svg class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
@@ -199,6 +205,16 @@
                                 <h3 class="text-xl font-bold text-slate-50">Kelas Binaan Anda</h3>
                                 <p class="text-sm text-slate-400 mt-1">Total Siswa: <span class="text-slate-100 font-semibold">{{ $totalSiswaDiampu }}</span></p>
                             </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 mb-6">
+                            <a href="{{ route('admin.absensi.scan') }}" class="inline-flex items-center gap-2 rounded-xl bg-slate-800 border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-100 hover:border-sky-500/60 hover:text-sky-300 transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v2m0 12v2m6-10h2m-2 4h2M4 10h2m-2 4h2m1-9h1a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1zm12 0h1a1 1 0 001-1V5a1 1 0 00-1-1h-1a1 1 0 00-1 1v1a1 1 0 001 1zM5 20h1a1 1 0 001-1v-1a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z" /></svg>
+                                Scanner Kamera
+                            </a>
+                            <a href="{{ route('admin.absensi.gun') }}" class="inline-flex items-center gap-2 rounded-xl bg-slate-800 border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-100 hover:border-sky-500/60 hover:text-sky-300 transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-4-4 4 4-4 4" /></svg>
+                                Gun Scanner (Alat)
+                            </a>
                         </div>
                         @if ($kelasDiampu->isEmpty())
                             <div class="text-center py-8 text-slate-400 text-sm">

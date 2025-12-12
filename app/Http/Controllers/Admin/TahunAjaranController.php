@@ -14,7 +14,7 @@ class TahunAjaranController extends Controller
     public function index()
     {
         // Ambil semua data tahun ajaran dari database
-        $semuaTahunAjaran = TahunAjaran::orderBy('tahun_ajaran', 'desc')->get();
+        $semuaTahunAjaran = TahunAjaran::orderBy('tahun_ajaran', 'desc')->paginate(10);
 
         // Kirim data ke view
         return view('admin.tahun_ajaran.index', [

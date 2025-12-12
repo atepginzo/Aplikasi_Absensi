@@ -29,7 +29,7 @@
                     <div class="flex items-center justify-between mb-6">
                         <div>
                             <h3 class="text-lg font-semibold text-white">Daftar Wali Kelas</h3>
-                            <p class="text-sm text-slate-400 mt-1">Total: {{ count($semuaWaliKelas ?? []) }} wali kelas</p>
+                            <p class="text-sm text-slate-400 mt-1">Total: {{ $semuaWaliKelas->total() }} wali kelas</p>
                         </div>
                         <a href="{{ route('admin.wali-kelas.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-sky-600 to-sky-500 border border-transparent rounded-xl font-semibold text-sm text-slate-50 hover:from-sky-500 hover:to-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@
                                 @forelse ($semuaWaliKelas as $key => $wali)
                                     <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-medium text-slate-300">{{ $key + 1 }}</span>
+                                            <span class="text-sm font-medium text-slate-300">{{ ($semuaWaliKelas->firstItem() ?? 0) + $key }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="text-sm text-slate-200 font-medium">{{ $wali->nip }}</span>
@@ -108,6 +108,14 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if ($semuaWaliKelas->hasPages())
+                        <div class="px-6 pb-6">
+                            <div class="mt-6">
+                                {{ $semuaWaliKelas->links() }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Modal Konfirmasi Hapus --}}

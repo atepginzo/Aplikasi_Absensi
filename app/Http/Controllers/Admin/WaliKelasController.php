@@ -16,8 +16,10 @@ class WaliKelasController extends Controller
      */
     public function index()
     {
-        // Ambil semua data wali kelas
-        $semuaWaliKelas = WaliKelas::orderBy('nama_lengkap', 'asc')->get();
+        // Ambil semua data wali kelas beserta akun pengguna terkait
+        $semuaWaliKelas = WaliKelas::with('user')
+            ->orderBy('nama_lengkap', 'asc')
+            ->paginate(10);
 
         // tampilkan view dan kirim datanya
         return view('admin.wali_kelas.index', [

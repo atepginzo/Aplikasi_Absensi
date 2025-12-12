@@ -49,7 +49,7 @@
                     <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
                         <div>
                             <h3 class="text-lg font-semibold text-slate-50">Daftar Siswa</h3>
-                            <p class="text-sm text-slate-400 mt-1">Total: {{ count($semuaSiswa ?? []) }} siswa</p>
+                            <p class="text-sm text-slate-400 mt-1">Total: {{ $semuaSiswa->total() }} siswa</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <button type="button" @click="showImportModal = true" class="inline-flex items-center px-5 py-2.5 rounded-xl border border-slate-700 text-sm font-semibold text-slate-100 bg-slate-900/70 hover:bg-slate-800 transition">
@@ -113,7 +113,7 @@
                                     @forelse ($semuaSiswa as $key => $siswa)
                                         <tr class="hover:bg-slate-800 transition-colors duration-150">
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="text-sm font-medium text-slate-300">{{ $key + 1 }}</span>
+                                                <span class="text-sm font-medium text-slate-300">{{ ($semuaSiswa->firstItem() ?? 0) + $key }}</span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-sky-400 border border-slate-800">
@@ -183,7 +183,7 @@
                         @forelse ($semuaSiswa as $key => $siswa)
                             <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-lg">
                                 <div class="flex items-center justify-between mb-3">
-                                    <span class="text-xs uppercase tracking-wide text-slate-500">#{{ $key + 1 }}</span>
+                                    <span class="text-xs uppercase tracking-wide text-slate-500">#{{ ($semuaSiswa->firstItem() ?? 0) + $key }}</span>
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-sky-300 border border-slate-700">
                                         {{ $siswa->kelas->nama_kelas ?? 'N/A' }}
                                     </span>
@@ -226,6 +226,14 @@
                             </div>
                         @endforelse
                     </div>
+
+                    @if ($semuaSiswa->hasPages())
+                        <div class="px-6 pb-6">
+                            <div class="mt-6">
+                                {{ $semuaSiswa->links() }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Modal Import Excel --}}

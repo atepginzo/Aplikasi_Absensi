@@ -25,6 +25,10 @@
                             <span>Mode Scan Kehadiran</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                         </a>
+                        <a href="{{ route('admin.absensi.gun') }}" class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-sm font-semibold text-slate-200 hover:border-sky-500/40 hover:text-sky-300 transition">
+                            <span>Gun Scanner (Alat)</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-4-4 4 4-4 4" /></svg>
+                        </a>
                         <a href="{{ route('admin.absensi.manual.index') }}" class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-sm font-semibold text-slate-200 hover:border-sky-500/40 hover:text-sky-300 transition">
                             <span>Input Manual Kehadiran</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>

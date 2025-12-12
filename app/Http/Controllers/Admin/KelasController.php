@@ -21,8 +21,8 @@ class KelasController extends Controller
         // 'with()' -> Eager Loading, ini adalah cara yang efisien
         //            untuk menghindari N+1 problem.
         $semuaKelas = Kelas::with(['tahunAjaran', 'waliKelas'])
-                                ->orderBy('nama_kelas', 'asc')
-                                ->get();
+                    ->orderBy('nama_kelas', 'asc')
+                    ->paginate(10);
 
         // Tampilkan view dan kirim data 'semuaKelas'
         return view('admin.kelas.index', [

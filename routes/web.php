@@ -68,6 +68,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // ==============================================
 Route::middleware(['auth', 'role:admin,wali_kelas'])->prefix('admin/absensi')->name('admin.absensi.')->group(function () {
     Route::get('/scan', [AbsensiController::class, 'index'])->name('scan');
+    Route::get('/gun', [AbsensiController::class, 'modeGun'])->name('gun');
     Route::post('/store', [AbsensiController::class, 'store'])->name('store');
 
     Route::get('/manual', [ManualAbsensiController::class, 'index'])->name('manual.index');

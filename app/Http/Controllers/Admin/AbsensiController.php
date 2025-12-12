@@ -19,6 +19,14 @@ class AbsensiController extends Controller
     }
 
     /**
+     * Mode khusus untuk penggunaan Gun Scanner (keyboard wedge).
+     */
+    public function modeGun()
+    {
+        return view('admin.absensi.gun');
+    }
+
+    /**
      * Memproses Data QR Code yang dikirim Scanner (AJAX)
      */
     public function store(Request $request)
@@ -29,7 +37,7 @@ class AbsensiController extends Controller
         ]);
 
         // 2. Cari siswa berdasarkan token
-        $siswa = Siswa::where('qrcode_token', $request->qrcode_token)->first();
+        $siswa = Siswa::with('kelas')->where('qrcode_token', $request->qrcode_token)->first();
 
         if (!$siswa) {
             return response()->json([
@@ -49,23 +57,29 @@ class AbsensiController extends Controller
             return response()->json([
                 'status' => 'warning',
                 'message' => 'Siswa atas nama ' . $siswa->nama_siswa . ' sudah absen hari ini.',
-                'siswa' => $siswa
+                'siswa' => $siswa,
+                'jam_masuk' => optional($sudahAbsen)->jam_masuk,
+                'tanggal' => $tanggalHariIni->toDateString(),
             ]);
         }
 
         // 4. Simpan Kehadiran Baru
+        $jamMasuk = Carbon::now();
+
         Kehadiran::create([
             'siswa_id' => $siswa->id,
             'tanggal' => $tanggalHariIni,
             'status' => 'Hadir', // Default Hadir jika scan
-            'jam_masuk' => Carbon::now()->format('H:i:s'),
+            'jam_masuk' => $jamMasuk->format('H:i:s'),
         ]);
 
         // 5. Kirim respon sukses
         return response()->json([
             'status' => 'success',
             'message' => 'Berhasil! ' . $siswa->nama_siswa . ' telah hadir.',
-            'siswa' => $siswa
+            'siswa' => $siswa,
+            'jam_masuk' => $jamMasuk->format('H:i:s'),
+            'tanggal' => $tanggalHariIni->toDateString(),
         ]);
     }
 }
