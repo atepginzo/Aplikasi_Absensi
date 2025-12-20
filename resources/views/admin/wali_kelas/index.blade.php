@@ -40,79 +40,127 @@
                     </div>
 
                     {{-- Tabel Data --}}
-                    <div class="overflow-x-auto rounded-xl border border-slate-800">
-                        <table class="min-w-full divide-y divide-slate-800">
-                            <thead class="bg-slate-800/50">                                <tr>
-                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">No.</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">NIP</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">Nama Lengkap</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">Jenis Kelamin</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-slate-900/50 divide-y divide-slate-800">
-                                @forelse ($semuaWaliKelas as $key => $wali)
-                                    <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-semibold text-slate-200">{{ ($semuaWaliKelas->firstItem() ?? 0) + $key }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-slate-100 font-semibold tracking-wide">{{ $wali->nip }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 rounded-full border border-slate-800 bg-slate-900 shadow-inner shadow-black/40 overflow-hidden flex items-center justify-center">
-                                                    @if ($wali->user?->photo_url)
-                                                        <img src="{{ $wali->user->photo_url }}" alt="{{ $wali->nama_lengkap }}" class="w-full h-full object-cover">
-                                                    @else
-                                                        <span class="text-sm font-semibold text-slate-100">{{ strtoupper(substr($wali->nama_lengkap, 0, 1)) }}</span>
-                                                    @endif
-                                                </div>
-                                                <div>
-                                                    <p class="text-sm font-semibold text-slate-50">{{ $wali->nama_lengkap }}</p>
-                                                    <p class="text-xs text-slate-500">{{ $wali->user?->email ?? 'Tidak ada email' }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $wali->jenis_kelamin == 'L' ? 'bg-blue-500/20 text-blue-200 border border-blue-500/30' : 'bg-pink-500/20 text-pink-200 border border-pink-500/30' }}">
-                                                {{ $wali->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex items-center space-x-3">
-                                                <a href="{{ route('admin.wali-kelas.edit', $wali->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 border border-slate-700 transition-colors">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                    </svg>
-                                                    Edit
-                                                </a>
-                                                <button type="button" 
-                                                        @click="deleteUrl = '{{ route('admin.wali-kelas.destroy', $wali->id) }}'; showModal = true"
-                                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 border border-red-500/30 transition-colors">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                    Hapus
-                                                </button>
-                                            </div>
-                                        </td>
+                    <div class="hidden sm:block">
+                        <div class="overflow-x-auto rounded-xl border border-slate-800">
+                            <table class="min-w-full divide-y divide-slate-800">
+                                <thead class="bg-slate-800/50">                                <tr>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">NIP</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Lengkap</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Jenis Kelamin</th>
+                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="px-6 py-12 text-center">
-                                            <div class="flex flex-col items-center">
-                                                <svg class="w-16 h-16 text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                                </svg>
-                                                <p class="text-sm font-medium text-slate-400">Data tidak ditemukan.</p>
-                                                <p class="text-xs text-slate-500 mt-1">Mulai dengan menambahkan wali kelas baru</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="bg-slate-900/50 divide-y divide-slate-800">
+                                    @forelse ($semuaWaliKelas as $key => $wali)
+                                        <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="text-sm font-semibold text-slate-200">{{ ($semuaWaliKelas->firstItem() ?? 0) + $key }}</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="text-sm text-slate-100 font-semibold tracking-wide">{{ $wali->nip }}</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-full border border-slate-800 bg-slate-900 shadow-inner shadow-black/40 overflow-hidden flex items-center justify-center">
+                                                        @if ($wali->user?->photo_url)
+                                                            <img src="{{ $wali->user->photo_url }}" alt="{{ $wali->nama_lengkap }}" class="w-full h-full object-cover">
+                                                        @else
+                                                            <span class="text-sm font-semibold text-slate-100">{{ strtoupper(substr($wali->nama_lengkap, 0, 1)) }}</span>
+                                                        @endif
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-semibold text-slate-50">{{ $wali->nama_lengkap }}</p>
+                                                        <p class="text-xs text-slate-500">{{ $wali->user?->email ?? 'Tidak ada email' }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $wali->jenis_kelamin == 'L' ? 'bg-blue-500/20 text-blue-200 border border-blue-500/30' : 'bg-pink-500/20 text-pink-200 border border-pink-500/30' }}">
+                                                    {{ $wali->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex items-center space-x-3">
+                                                    <a href="{{ route('admin.wali-kelas.edit', $wali->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 border border-slate-700 transition-colors">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                        </svg>
+                                                        Edit
+                                                    </a>
+                                                    <button type="button" 
+                                                            @click="deleteUrl = '{{ route('admin.wali-kelas.destroy', $wali->id) }}'; showModal = true"
+                                                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 border border-red-500/30 transition-colors">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <svg class="w-16 h-16 text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                    </svg>
+                                                    <p class="text-sm font-medium text-slate-400">Data tidak ditemukan.</p>
+                                                    <p class="text-xs text-slate-500 mt-1">Mulai dengan menambahkan wali kelas baru</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- Tampilan card untuk layar kecil --}}
+                    <div class="sm:hidden space-y-4">
+                        @forelse ($semuaWaliKelas as $key => $wali)
+                            <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-lg">
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="w-14 h-14 rounded-full border border-slate-800 bg-slate-950 overflow-hidden flex items-center justify-center">
+                                        @if ($wali->user?->photo_url)
+                                            <img src="{{ $wali->user->photo_url }}" alt="{{ $wali->nama_lengkap }}" class="w-full h-full object-cover">
+                                        @else
+                                            <span class="text-base font-semibold text-slate-100">{{ strtoupper(substr($wali->nama_lengkap, 0, 1)) }}</span>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <p class="text-xs uppercase tracking-wide text-slate-500">#{{ ($semuaWaliKelas->firstItem() ?? 0) + $key }}</p>
+                                        <p class="text-lg font-semibold text-slate-50">{{ $wali->nama_lengkap }}</p>
+                                        <p class="text-xs text-slate-500">{{ $wali->user?->email ?? 'Tidak ada email' }}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3 text-sm text-slate-300">
+                                    <div>
+                                        <p class="text-xs text-slate-500">NIP</p>
+                                        <p class="font-medium text-slate-100">{{ $wali->nip }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-500">Jenis Kelamin</p>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $wali->jenis_kelamin == 'L' ? 'bg-blue-500/20 text-blue-100 border border-blue-500/30' : 'bg-pink-500/20 text-pink-100 border border-pink-500/30' }}">
+                                            {{ $wali->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex flex-col gap-2">
+                                    <a href="{{ route('admin.wali-kelas.edit', $wali->id) }}" class="inline-flex items-center justify-center rounded-xl bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 border border-slate-700">
+                                        Edit Wali Kelas
+                                    </a>
+                                    <button type="button" @click="deleteUrl = '{{ route('admin.wali-kelas.destroy', $wali->id) }}'; showModal = true" class="inline-flex items-center justify-center rounded-xl bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-300 border border-red-500/30">
+                                        Hapus Data
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-8">
+                                <p class="text-sm text-slate-400">Belum ada data wali kelas.</p>
+                            </div>
+                        @endforelse
                     </div>
 
                     @if ($semuaWaliKelas->hasPages())
