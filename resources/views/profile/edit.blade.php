@@ -12,9 +12,17 @@
             <!-- Profile Information -->
             <div class="bg-slate-900 rounded-2xl shadow-lg border border-slate-800 overflow-hidden">
                 <div class="p-6">
+                    @php
+                        $photoUrl = Auth::user()->photo_url;
+                        $initial = strtoupper(substr(Auth::user()->name, 0, 1));
+                    @endphp
                     <div class="flex items-center space-x-4 mb-6">
-                        <div class="w-12 h-12 rounded-full bg-sky-600 flex items-center justify-center text-slate-50 text-xl font-semibold">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-800 flex items-center justify-center text-slate-50 text-xl font-semibold">
+                            @if ($photoUrl)
+                                <img src="{{ $photoUrl }}" alt="Foto Profil" class="w-full h-full object-cover">
+                            @else
+                                {{ $initial }}
+                            @endif
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-slate-50">{{ Auth::user()->name }}</h3>

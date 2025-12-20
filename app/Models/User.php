@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Siswa;
 use App\Models\WaliKelas;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -23,6 +25,11 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'photo_path',
+    ];
+
+    protected $appends = [
+        'photo_url',
     ];
 
     /**
@@ -56,5 +63,14 @@ class User extends Authenticatable
     public function siswa()
     {
         return $this->hasOne(Siswa::class, 'parent_user_id');
+    }
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (! $this->photo_path) {
+            return null;
+        }
+
+        return asset('storage/' . $this->photo_path);
     }
 }

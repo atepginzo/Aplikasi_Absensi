@@ -16,6 +16,12 @@
                     </svg>
                     Kembali
                 </a>
+                <a href="{{ route('admin.laporan.bulanan-kelas', ['kelas' => $kelas->id, 'bulan' => request('bulan', now()->format('Y-m'))]) }}" class="inline-flex items-center justify-center rounded-full border border-emerald-600/70 bg-emerald-600/10 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-600/20 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M3 9h18M9 21V9" />
+                    </svg>
+                    Rekap Bulanan
+                </a>
                 <a href="{{ route('admin.laporan.export', $kelas->id) }}" class="inline-flex items-center justify-center rounded-full border border-sky-600 bg-sky-600/10 px-4 py-2 text-sm font-semibold text-sky-200 hover:bg-sky-600/20 transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4m-8 8h8" />
@@ -63,7 +69,7 @@
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-800 text-sm">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                             <thead class="bg-slate-900/60">
                                 <tr>
                                     <th class="px-6 py-4 text-left font-semibold text-slate-400 uppercase tracking-wide">Tanggal</th>
@@ -75,7 +81,7 @@
                                     <th class="px-6 py-4 text-center font-semibold text-slate-400 uppercase tracking-wide">Detail</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-slate-950/40">
                                 @foreach ($rekapKehadiran as $rekap)
                                     <tr class="hover:bg-slate-900/40 transition-colors">
                                         <td class="px-6 py-4 text-slate-100 font-semibold">

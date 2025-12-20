@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-800 text-sm">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                         <thead class="bg-slate-900/70">
                             <tr>
                                 <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide">No</th>
@@ -59,7 +59,7 @@
                                 <th class="px-4 py-3 text-center font-semibold text-slate-400 uppercase tracking-wide">Status Kehadiran</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-800 bg-slate-950/50">
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-slate-950/50">
                             @forelse ($daftarSiswa as $index => $siswa)
                                 @php
                                     $status = optional($kehadiranPadaTanggal->get($siswa->id))->status;

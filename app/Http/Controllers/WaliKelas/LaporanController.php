@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Kehadiran;
 use App\Models\WaliKelas;
+use App\Traits\BuildsMonthlyAttendance;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LaporanController extends Controller
 {
+    use BuildsMonthlyAttendance;
+
     public function index()
     {
         $wali = Auth::user()?->waliKelas;
@@ -110,6 +114,56 @@ class LaporanController extends Controller
         ]);
 
         return $pdf->download('Laporan_Absensi_' . $kelas->nama_kelas . '.pdf');
+    }
+
+    public function bulanan($kelasId, Request $request)
+    {
+        $wali = Auth::user()?->waliKelas;
+
+        if (! $wali) {
+            abort(403, 'Akun Anda belum terhubung dengan data wali kelas.');
+        }
+
+        $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])
+            ->where('wali_kelas_id', $wali->id)
+            ->findOrFail($kelasId);
+
+        $bulanInput = $request->input('bulan') ?: now()->format('Y-m');
+        $periode = $this->normalizeMonth($bulanInput) ?? now()->startOfDay();
+        $rekapBulanan = $this->buildMonthlyAttendance($kelas->id, $periode);
+
+        return view('wali.laporan.bulanan', [
+            'kelas' => $kelas,
+            'rekapBulanan' => $rekapBulanan,
+            'bulanDipilih' => $periode->format('Y-m'),
+            'periodeLabel' => $periode->translatedFormat('F Y'),
+        ]);
+    }
+
+    public function exportBulananPdf($kelasId, Request $request)
+    {
+        $wali = Auth::user()?->waliKelas;
+
+        if (! $wali) {
+            abort(403, 'Akun Anda belum terhubung dengan data wali kelas.');
+        }
+
+        $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])
+            ->where('wali_kelas_id', $wali->id)
+            ->findOrFail($kelasId);
+
+        $bulanInput = $request->input('bulan') ?: now()->format('Y-m');
+        $periode = $this->normalizeMonth($bulanInput) ?? now()->startOfDay();
+        $rekapBulanan = $this->buildMonthlyAttendance($kelas->id, $periode);
+
+        $pdf = Pdf::loadView('admin.laporan.pdf_bulanan', [
+            'kelas' => $kelas,
+            'rekapBulanan' => $rekapBulanan,
+            'periodeLabel' => $periode->translatedFormat('F Y'),
+            'tanggalCetak' => now(),
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('Rekap_Bulanan_' . $kelas->nama_kelas . '_' . $periode->format('Y_m') . '.pdf');
     }
 
     private function getRekapData($kelasId)

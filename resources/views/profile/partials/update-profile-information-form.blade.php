@@ -12,9 +12,30 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        <div class="space-y-2">
+            <x-input-label for="photo" :value="__('Foto Profil')" class="text-slate-300" />
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full overflow-hidden bg-slate-800 flex items-center justify-center text-slate-400">
+                    @if ($user->photo_url)
+                        <img src="{{ $user->photo_url }}" alt="Foto Profil" class="w-full h-full object-cover">
+                    @else
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.341A8 8 0 104.572 15.34" />
+                        </svg>
+                    @endif
+                </div>
+                <div class="flex-1">
+                    <input id="photo" name="photo" type="file" accept="image/*" class="block w-full text-sm text-slate-300 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-100 hover:file:bg-slate-700" />
+                    <p class="mt-2 text-xs text-slate-500">Format JPG atau PNG, maksimal 2 MB.</p>
+                </div>
+            </div>
+            <x-input-error :messages="$errors->get('photo')" class="mt-1 text-sm text-red-500" />
+        </div>
 
         <div class="space-y-2">
             <x-input-label for="name" :value="__('Nama')" class="text-slate-300" />

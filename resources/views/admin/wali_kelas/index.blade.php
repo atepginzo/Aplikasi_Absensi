@@ -42,34 +42,40 @@
                     {{-- Tabel Data --}}
                     <div class="overflow-x-auto rounded-xl border border-slate-800">
                         <table class="min-w-full divide-y divide-slate-800">
-                            <thead class="bg-slate-800/50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">NIP</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Lengkap</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Jenis Kelamin</th>
-                                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
+                            <thead class="bg-slate-800/50">                                <tr>
+                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">No.</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">NIP</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">Nama Lengkap</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">Jenis Kelamin</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-[11px] font-semibold">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-slate-900/50 divide-y divide-slate-800">
                                 @forelse ($semuaWaliKelas as $key => $wali)
                                     <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-medium text-slate-300">{{ ($semuaWaliKelas->firstItem() ?? 0) + $key }}</span>
+                                            <span class="text-sm font-semibold text-slate-200">{{ ($semuaWaliKelas->firstItem() ?? 0) + $key }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm text-slate-200 font-medium">{{ $wali->nip }}</span>
+                                            <span class="text-sm text-slate-100 font-semibold tracking-wide">{{ $wali->nip }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs mr-3 shadow-lg">
-                                                    {{ strtoupper(substr($wali->nama_lengkap, 0, 1)) }}
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-full border border-slate-800 bg-slate-900 shadow-inner shadow-black/40 overflow-hidden flex items-center justify-center">
+                                                    @if ($wali->user?->photo_url)
+                                                        <img src="{{ $wali->user->photo_url }}" alt="{{ $wali->nama_lengkap }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        <span class="text-sm font-semibold text-slate-100">{{ strtoupper(substr($wali->nama_lengkap, 0, 1)) }}</span>
+                                                    @endif
                                                 </div>
-                                                <span class="text-sm font-semibold text-slate-200">{{ $wali->nama_lengkap }}</span>
+                                                <div>
+                                                    <p class="text-sm font-semibold text-slate-50">{{ $wali->nama_lengkap }}</p>
+                                                    <p class="text-xs text-slate-500">{{ $wali->user?->email ?? 'Tidak ada email' }}</p>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium {{ $wali->jenis_kelamin == 'L' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-pink-500/20 text-pink-300 border border-pink-500/30' }}">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $wali->jenis_kelamin == 'L' ? 'bg-blue-500/20 text-blue-200 border border-blue-500/30' : 'bg-pink-500/20 text-pink-200 border border-pink-500/30' }}">
                                                 {{ $wali->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
                                             </span>
                                         </td>

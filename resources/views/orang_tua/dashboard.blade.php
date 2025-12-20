@@ -76,8 +76,8 @@
                     @if ($riwayatKehadiran->isEmpty())
                         <p class="text-sm text-slate-400">Belum ada data kehadiran untuk anak Anda.</p>
                     @else
-                        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
-                            <table class="min-w-full divide-y divide-slate-800 text-sm">
+                        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-slate-950/60">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 <thead class="bg-slate-900/80">
                                     <tr>
                                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Tanggal</th>
@@ -86,7 +86,7 @@
                                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Jam Pulang</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-slate-950/40 divide-y divide-slate-800">
+                                <tbody class="bg-slate-950/40 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach ($riwayatKehadiran as $kehadiran)
                                         @php
                                             $status = $kehadiran->status;

@@ -93,7 +93,7 @@
                         <input type="hidden" name="tanggal" value="{{ $tanggalDipilih }}">
 
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-800 text-sm">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 <thead class="bg-slate-900/60">
                                     <tr>
                                         <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide w-12">No</th>
@@ -102,7 +102,7 @@
                                         <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-slate-950/40">
                                     @foreach ($siswaKelas as $index => $siswa)
                                         @php
                                             // Ambil status saat ini (jika ada) untuk menentukan mana yang 'checked'

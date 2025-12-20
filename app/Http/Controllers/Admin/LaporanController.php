@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Kehadiran;
+use App\Traits\BuildsMonthlyAttendance;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class LaporanController extends Controller
 {
+    use BuildsMonthlyAttendance;
     /**
      * Tampilkan daftar kelas untuk dipilih.
      */
@@ -104,30 +106,12 @@ class LaporanController extends Controller
 
         if ($bulanDipilih && $kelasId) {
             $kelasDipilih = Kelas::with(['waliKelas', 'tahunAjaran'])->findOrFail($kelasId);
+            $periode = $this->normalizeMonth($bulanDipilih);
 
-            try {
-                $periode = Carbon::createFromFormat('Y-m', $bulanDipilih);
-                $awal = $periode->copy()->startOfMonth()->toDateString();
-                $akhir = $periode->copy()->endOfMonth()->toDateString();
+            if ($periode) {
+                $rekapBulanan = $this->buildMonthlyAttendance($kelasDipilih->id, $periode);
                 $periodeLabel = $periode->translatedFormat('F Y');
-
-                $rekapBulanan = Kehadiran::selectRaw(
-                    "siswas.id as siswa_id,
-                    siswas.nama_siswa,
-                    SUM(CASE WHEN kehadirans.status = 'Hadir' THEN 1 ELSE 0 END) AS total_hadir,
-                    SUM(CASE WHEN kehadirans.status = 'Sakit' THEN 1 ELSE 0 END) AS total_sakit,
-                    SUM(CASE WHEN kehadirans.status = 'Izin' THEN 1 ELSE 0 END) AS total_izin,
-                    SUM(CASE WHEN kehadirans.status = 'Alpha' THEN 1 ELSE 0 END) AS total_alpha"
-                )
-                    ->join('siswas', 'siswas.id', '=', 'kehadirans.siswa_id')
-                    ->where('siswas.kelas_id', $kelasDipilih->id)
-                    ->whereBetween('kehadirans.tanggal', [$awal, $akhir])
-                    ->groupBy('siswas.id', 'siswas.nama_siswa')
-                    ->orderBy('siswas.nama_siswa', 'asc')
-                    ->get();
-            } catch (\Exception $e) {
-                $rekapBulanan = collect();
-                $periodeLabel = null;
+                $bulanDipilih = $periode->format('Y-m');
             }
         }
 
@@ -139,6 +123,46 @@ class LaporanController extends Controller
             'periodeLabel' => $periodeLabel,
             'kelasIdDipilih' => $kelasId,
         ]);
+    }
+
+    /**
+     * Rekap bulanan khusus per kelas.
+     */
+    public function bulananKelas(Request $request, $kelasId)
+    {
+        $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])->findOrFail($kelasId);
+        $bulanInput = $request->input('bulan') ?: now()->format('Y-m');
+        $periode = $this->normalizeMonth($bulanInput) ?? now()->startOfDay();
+
+        $rekapBulanan = $this->buildMonthlyAttendance($kelas->id, $periode);
+
+        return view('admin.laporan.bulanan-kelas', [
+            'kelas' => $kelas,
+            'rekapBulanan' => $rekapBulanan,
+            'bulanDipilih' => $periode->format('Y-m'),
+            'periodeLabel' => $periode->translatedFormat('F Y'),
+        ]);
+    }
+
+    /**
+     * Export bulanan per kelas ke PDF.
+     */
+    public function exportBulananPdf(Request $request, $kelasId)
+    {
+        $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])->findOrFail($kelasId);
+        $bulanInput = $request->input('bulan') ?: now()->format('Y-m');
+        $periode = $this->normalizeMonth($bulanInput) ?? now()->startOfDay();
+
+        $rekapBulanan = $this->buildMonthlyAttendance($kelas->id, $periode);
+
+        $pdf = Pdf::loadView('admin.laporan.pdf_bulanan', [
+            'kelas' => $kelas,
+            'rekapBulanan' => $rekapBulanan,
+            'periodeLabel' => $periode->translatedFormat('F Y'),
+            'tanggalCetak' => now(),
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('Rekap_Bulanan_' . $kelas->nama_kelas . '_' . $periode->format('Y_m') . '.pdf');
     }
 
     /**

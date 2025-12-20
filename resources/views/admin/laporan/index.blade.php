@@ -30,8 +30,7 @@
                 @else
                     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach ($daftarKelas as $kelas)
-                            <a href="{{ route('admin.laporan.show', $kelas->id) }}"
-                               class="group relative rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-lg shadow-black/30 transition-all duration-200 hover:-translate-y-1 hover:border-sky-500/60 hover:shadow-black/50">
+                            <div class="group relative rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-lg shadow-black/30 transition-all duration-200 hover:-translate-y-1 hover:border-sky-500/60 hover:shadow-black/50">
                                 <div class="flex items-center justify-between">
                                     <div class="inline-flex items-center space-x-2 rounded-full border border-slate-800 bg-slate-800/60 px-3 py-1 text-xs font-medium text-slate-300">
                                         <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,19 +46,26 @@
                                     <h3 class="text-xl font-semibold text-slate-50">{{ $kelas->nama_kelas }}</h3>
                                 </div>
 
-                                <div class="mt-6 flex items-center justify-between text-sm">
-                                    <div>
-                                        <p class="text-slate-500 text-xs uppercase tracking-wide">Wali Kelas</p>
-                                        <p class="text-slate-200 font-medium">{{ $kelas->waliKelas->nama_lengkap ?? 'Belum ditetapkan' }}</p>
-                                    </div>
-                                    <div class="text-slate-400 text-xs flex items-center">
-                                        <span class="mr-1">Lihat Rekap</span>
-                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-sky-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="mt-6">
+                                    <p class="text-slate-500 text-xs uppercase tracking-wide">Wali Kelas</p>
+                                    <p class="text-slate-200 font-medium">{{ $kelas->waliKelas->nama_lengkap ?? 'Belum ditetapkan' }}</p>
+                                </div>
+
+                                <div class="mt-6 flex flex-wrap gap-2">
+                                    <a href="{{ route('admin.laporan.show', $kelas->id) }}" class="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-800 bg-slate-800/60 px-3 py-2 text-xs font-semibold text-slate-200 hover:border-sky-500 hover:text-sky-300 transition">
+                                        Rekap Harian
+                                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
-                                    </div>
+                                    </a>
+                                    <a href="{{ route('admin.laporan.bulanan-kelas', ['kelas' => $kelas->id, 'bulan' => now()->format('Y-m')]) }}" class="inline-flex flex-1 items-center justify-center rounded-xl border border-emerald-600/60 bg-emerald-600/10 px-3 py-2 text-xs font-semibold text-emerald-100 hover:bg-emerald-600/20 transition">
+                                        Rekap Bulanan
+                                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M3 9h18M9 21V9" />
+                                        </svg>
+                                    </a>
                                 </div>
-                            </a>
+                            </div>
                         @endforeach
                     </div>
                 @endif

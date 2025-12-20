@@ -1,9 +1,13 @@
 <nav x-data="{ open: false }" class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 shadow-lg">
     @php
-        $role = Auth::user()->role ?? null;
+        $user = Auth::user();
+        $role = $user->role ?? null;
         $isAdmin = $role === 'admin';
         $isWali = $role === 'wali_kelas';
         $isOrangTua = $role === 'orang_tua';
+
+        $photoUrl = $user?->photo_url;
+        $initial = $user ? strtoupper(substr($user->name, 0, 1)) : '?';
 
         $dashboardRouteName = match (true) {
             $isAdmin => 'dashboard',
@@ -25,6 +29,7 @@
             $laporanPattern = null;
         }
     @endphp
+
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -97,6 +102,7 @@
                         </svg>
                         {{ __('Input Manual') }}
                     </x-nav-link>
+                    @endif
 
                     @if ($laporanRouteName)
                     <x-nav-link :href="route($laporanRouteName)" :active="request()->routeIs($laporanPattern)" class="px-3 py-2 text-sm rounded-lg transition-all duration-200 hover:bg-slate-800/50">
@@ -105,7 +111,6 @@
                         </svg>
                         {{ __('Laporan') }}
                     </x-nav-link>
-                    @endif
                     @endif
                 </div>
             </div>
@@ -116,10 +121,14 @@
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-slate-50 bg-slate-900 hover:bg-slate-800 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-neutral-950 transition-all duration-200">
                             <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center text-white font-semibold text-sm shadow-lg">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center text-white font-semibold text-sm shadow-lg overflow-hidden">
+                                        @if ($photoUrl)
+                                            <img src="{{ $photoUrl }}" alt="Avatar" class="w-full h-full object-cover">
+                                        @else
+                                            {{ $initial }}
+                                        @endif
                                 </div>
-                                <span class="hidden md:block text-slate-50">{{ Auth::user()->name }}</span>
+                                    <span class="hidden md:block text-slate-50">{{ $user->name }}</span>
                             </div>
                             <svg class="ms-2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -136,13 +145,12 @@
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <a href="{{ route('logout.confirm') }}" 
-                           class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-900/30 transition-colors">
+                        <x-dropdown-link href="{{ route('logout') }}" x-on:click.prevent="document.getElementById('logout-form').submit()" class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-900/30 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                             </svg>
                             {{ __('Log Out') }}
-                        </a>
+                        </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -218,35 +226,38 @@
             @endif
 
             @if ($isAdmin || $isWali)
-            <x-responsive-nav-link :href="route('admin.absensi.manual.index')" :active="request()->routeIs('admin.absensi.manual.*')" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-colors">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                {{ __('Input Manual') }}
-            </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.absensi.manual.index')" :active="request()->routeIs('admin.absensi.manual.*')" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    {{ __('Input Manual') }}
+                </x-responsive-nav-link>
             @endif
 
             @if ($laporanRouteName)
-            <x-responsive-nav-link :href="route($laporanRouteName)" :active="request()->routeIs($laporanPattern)" class="flex items-center">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6m2 4H7m5 8v-4m4 4v-6m-8 6v-2m4-8h.01M5 5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z" />
-                </svg>
-                {{ __('Laporan') }}
-            </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route($laporanRouteName)" :active="request()->routeIs($laporanPattern)" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6m2 4H7m5 8v-4m4 4v-6m-8 6v-2m4-8h.01M5 5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z" />
+                    </svg>
+                    {{ __('Laporan') }}
+                </x-responsive-nav-link>
             @endif
-            
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-slate-800 bg-slate-900/50">
             <div class="px-4 mb-3">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center text-white font-semibold shadow-lg">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center text-white font-semibold shadow-lg overflow-hidden">
+                                @if ($photoUrl)
+                                    <img src="{{ $photoUrl }}" alt="Avatar" class="w-full h-full object-cover">
+                                @else
+                                    {{ $initial }}
+                                @endif
                     </div>
                     <div>
-                        <div class="font-medium text-base text-slate-50">{{ Auth::user()->name }}</div>
-                        <div class="font-medium text-sm text-slate-400">{{ Auth::user()->email }}</div>
+                        <div class="font-medium text-base text-slate-50">{{ $user->name }}</div>
+                        <div class="font-medium text-sm text-slate-400">{{ $user->email }}</div>
                     </div>
                 </div>
             </div>
@@ -260,14 +271,17 @@
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <a href="{{ route('logout.confirm') }}" 
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-800/50 text-red-400 transition-colors">
+                <x-responsive-nav-link href="{{ route('logout') }}" x-on:click.prevent="document.getElementById('logout-form').submit()" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-800/50 text-red-400 transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
                     {{ __('Log Out') }}
-                </a>
+                </x-responsive-nav-link>
             </div>
         </div>
     </div>
 </nav>
+
+<form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
+    @csrf
+</form>
