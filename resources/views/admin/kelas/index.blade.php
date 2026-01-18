@@ -15,7 +15,6 @@
             <div class="bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-800 overflow-hidden shadow-xl" x-data="{ showModal: false, deleteUrl: '' }">
                 <div class="p-6">
                     
-                    {{-- Tampilkan pesan sukses --}}
                     @if (session('success'))
                         <div class="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl flex items-center backdrop-blur-sm">
                             <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +24,6 @@
                         </div>
                     @endif
 
-                    {{-- Header dengan Tombol Tambah --}}
                     <div class="flex items-center justify-between mb-6">
                         <div>
                             <h3 class="text-lg font-semibold text-white">Daftar Kelas</h3>
@@ -39,40 +37,59 @@
                         </a>
                     </div>
 
-                    {{-- Tabel Data (Desktop) --}}
+                    <form method="GET" action="{{ route('admin.kelas.index') }}" class="mb-6">
+                        <div class="flex flex-col sm:flex-row sm:items-end gap-4 bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+                            <div class="w-full sm:w-1/4">
+                                <label for="tahun_ajaran_id" class="block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Tahun Ajaran</label>
+                                <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="this.form.submit()" class="w-full rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:border-sky-500 focus:ring-sky-500">
+                                    @foreach ($semuaTahunAjaran as $tahun)
+                                        <option value="{{ $tahun->id }}" {{ (string) $tahun->id === (string) $tahunPilihanId ? 'selected' : '' }}>
+                                            {{ $tahun->tahun_ajaran }} {{ $tahun->is_active ? '(Aktif)' : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @if ($tahunAktif && request('tahun_ajaran_id') && request('tahun_ajaran_id') != $tahunAktif->id)
+                                <a href="{{ route('admin.kelas.index') }}" class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-slate-300 rounded-xl border border-slate-700 hover:bg-slate-800 transition">
+                                    Reset
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+
                     <div class="hidden sm:block">
                         <div class="overflow-x-auto rounded-xl border border-slate-800">
                             <table class="min-w-full divide-y divide-slate-800">
                                 <thead class="bg-slate-800/50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Kelas</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Wali Kelas</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Tahun Ajaran</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Kelas</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Wali Kelas</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Tahun Ajaran</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-slate-900/50 divide-y divide-slate-800">
                                     @forelse ($semuaKelas as $key => $kelas)
                                         <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="text-sm font-medium text-slate-300">{{ ($semuaKelas->firstItem() ?? 0) + $key }}</span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
                                                     {{ $kelas->nama_kelas }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-left">
                                                 <span class="text-sm text-slate-200 font-medium">{{ $kelas->waliKelas->nama_lengkap ?? 'N/A' }}</span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                                     {{ $kelas->tahunAjaran->tahun_ajaran ?? 'N/A' }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <div class="flex items-center space-x-3">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
+                                                <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.kelas.show', $kelas->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-100 bg-slate-800/70 rounded-lg border border-slate-700 hover:bg-slate-700/70 transition-colors">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -115,7 +132,6 @@
                         </div>
                     </div>
 
-                    {{-- Kartu Data (Mobile) --}}
                     <div class="sm:hidden space-y-4">
                         @forelse ($semuaKelas as $key => $kelas)
                             <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-lg">
@@ -170,7 +186,6 @@
                     @endif
                 </div>
 
-                {{-- Modal Konfirmasi Hapus --}}
                 <div x-show="showModal" 
                      style="display: none;" 
                      @keydown.escape.window="showModal = false" 

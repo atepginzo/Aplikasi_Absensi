@@ -51,7 +51,14 @@
                             <h3 class="text-lg font-semibold text-slate-50">Daftar Siswa</h3>
                             <p class="text-sm text-slate-400 mt-1">Total: {{ $semuaSiswa->total() }} siswa</p>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            {{-- Tombol Kenaikan Kelas (Amber) --}}
+                            <a href="{{ route('admin.kenaikan-kelas.index') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 border border-transparent rounded-xl font-semibold text-sm text-slate-50 hover:from-amber-500 hover:to-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-neutral-950 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                </svg>
+                                Kenaikan Kelas
+                            </a>
                             <button type="button" @click="showImportModal = true" class="inline-flex items-center px-5 py-2.5 rounded-xl border border-slate-700 text-sm font-semibold text-slate-100 bg-slate-900/70 hover:bg-slate-800 transition">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -67,10 +74,22 @@
                         </div>
                     </div>
 
-                    {{-- Filter Kelas --}}
+                    {{-- Filter Tahun Ajaran dan Kelas --}}
                     <form method="GET" action="{{ route('admin.siswa.index') }}" class="mb-6">
                         <div class="flex flex-col sm:flex-row sm:items-end gap-4 bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
-                            <div class="w-full sm:w-1/3">
+                            {{-- Filter Tahun Ajaran --}}
+                            <div class="w-full sm:w-1/4">
+                                <label for="tahun_ajaran_id" class="block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Tahun Ajaran</label>
+                                <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="this.form.submit()" class="w-full rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:border-sky-500 focus:ring-sky-500">
+                                    @foreach ($semuaTahunAjaran as $tahun)
+                                        <option value="{{ $tahun->id }}" {{ (string) $tahun->id === (string) $tahunPilihanId ? 'selected' : '' }}>
+                                            {{ $tahun->tahun_ajaran }} {{ $tahun->is_active ? '(Aktif)' : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            {{-- Filter Kelas --}}
+                            <div class="w-full sm:w-1/4">
                                 <label for="kelas_id" class="block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Pilih Kelas</label>
                                 <select name="kelas_id" id="kelas_id" class="w-full rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:border-sky-500 focus:ring-sky-500">
                                     <option value="">Semua Kelas</option>
@@ -85,7 +104,7 @@
                                 <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-sky-600 text-sm font-semibold text-white rounded-xl border border-sky-500 hover:bg-sky-500 transition">
                                     Filter
                                 </button>
-                                @if (request('kelas_id'))
+                                @if (request('kelas_id') || (request('tahun_ajaran_id') && $tahunAktif && request('tahun_ajaran_id') != $tahunAktif->id))
                                     <a href="{{ route('admin.siswa.index') }}" class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-slate-300 rounded-xl border border-slate-700 hover:bg-slate-800 transition">
                                         Reset
                                     </a>
@@ -94,48 +113,49 @@
                         </div>
                     </form>
 
+
                         {{-- Tabel Data untuk layar menengah ke atas --}}
                         <div class="hidden sm:block">
                             <div class="overflow-x-auto rounded-xl border border-slate-800">
                                 <table class="min-w-full divide-y divide-slate-800">
                                     <thead class="bg-slate-800/50">
                                         <tr>
-                                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
-                                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Kelas</th>
-                                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">NIS</th>
-                                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Siswa</th>
-                                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Jenis Kelamin</th>
-                                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Wali</th>
-                                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
+                                            <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
+                                            <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Kelas</th>
+                                            <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">NIS</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Siswa</th>
+                                            <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Jenis Kelamin</th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Wali</th>
+                                            <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-slate-900/50 divide-y divide-slate-800">
                                         @forelse ($semuaSiswa as $key => $siswa)
                                             <tr class="hover:bg-slate-800 transition-colors duration-150">
-                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                <td class="px-4 py-3 whitespace-nowrap text-center">
                                                     <span class="text-sm font-medium text-slate-300">{{ ($semuaSiswa->firstItem() ?? 0) + $key }}</span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                <td class="px-4 py-3 whitespace-nowrap text-center">
                                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 text-sky-400 border border-slate-800">
                                                         {{ $siswa->kelas->nama_kelas ?? 'N/A' }}
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                <td class="px-4 py-3 whitespace-nowrap text-center">
                                                     <span class="text-sm text-slate-50 font-medium">{{ $siswa->nis }}</span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                <td class="px-4 py-3 whitespace-nowrap text-left">
                                                     <span class="text-sm text-slate-50 font-medium">{{ $siswa->nama_siswa }}</span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                <td class="px-4 py-3 whitespace-nowrap text-center">
                                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium {{ $siswa->jenis_kelamin == 'L' ? 'bg-slate-800 text-sky-400 border border-slate-800' : 'bg-pink-500/20 text-pink-300 border border-pink-500/30' }}">
                                                         {{ $siswa->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                <td class="px-4 py-3 whitespace-nowrap text-left">
                                                     <span class="text-sm text-slate-400">{{ $siswa->kelas->waliKelas->nama_lengkap ?? 'N/A' }}</span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div class="flex items-center space-x-3">
+                                                <td class="px-4 py-3 whitespace-nowrap text-center">
+                                                    <div class="flex items-center justify-center gap-2">
                                                         <a href="{{ route('admin.siswa.show', $siswa->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-sky-400 bg-slate-800 rounded-lg hover:bg-slate-700 border border-slate-800 transition-colors">
                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -149,9 +169,9 @@
                                                             </svg>
                                                             Edit
                                                         </a>
-                                                            <button type="button" 
-                                                                @click="deleteUrl = '{{ route('admin.siswa.destroy', $siswa->id) }}'; showDeleteModal = true"
-                                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 border border-red-500/30 transition-colors">
+                                                        <button type="button" 
+                                                            @click="deleteUrl = '{{ route('admin.siswa.destroy', $siswa->id) }}'; showDeleteModal = true"
+                                                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 rounded-lg hover:bg-red-500/20 border border-red-500/30 transition-colors">
                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                             </svg>

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AbsensiController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\ManualAbsensiController;
+use App\Http\Controllers\Admin\KenaikanKelasController;
 use App\Http\Controllers\WaliKelas\DashboardController as WaliDashboardController;
 use App\Http\Controllers\WaliKelas\LaporanController as WaliLaporanController;
 use App\Http\Controllers\OrangTua\OrangTuaController;
@@ -63,6 +64,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/laporan/{kelas}/export', [LaporanController::class, 'exportPdf'])->name('laporan.export');
     Route::get('/laporan/{kelas}/tanggal/{tanggal}', [LaporanController::class, 'detail'])->name('laporan.detail');
     Route::get('/laporan/{kelas}', [LaporanController::class, 'show'])->name('laporan.show');
+
+    // Kenaikan Kelas Massal
+    Route::get('kenaikan-kelas', [KenaikanKelasController::class, 'index'])->name('kenaikan-kelas.index');
+    Route::post('kenaikan-kelas', [KenaikanKelasController::class, 'store'])->name('kenaikan-kelas.store');
 
 });
 // ==============================================

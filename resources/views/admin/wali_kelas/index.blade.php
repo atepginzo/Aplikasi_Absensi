@@ -44,23 +44,23 @@
                         <div class="overflow-x-auto rounded-xl border border-slate-800">
                             <table class="min-w-full divide-y divide-slate-800">
                                 <thead class="bg-slate-800/50">                                <tr>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">NIP</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Lengkap</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Jenis Kelamin</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">NIP</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Nama Lengkap</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Jenis Kelamin</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-slate-900/50 divide-y divide-slate-800">
                                     @forelse ($semuaWaliKelas as $key => $wali)
                                         <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="text-sm font-semibold text-slate-200">{{ ($semuaWaliKelas->firstItem() ?? 0) + $key }}</span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="text-sm text-slate-100 font-semibold tracking-wide">{{ $wali->nip }}</span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-left">
                                                 <div class="flex items-center gap-3">
                                                     <div class="w-10 h-10 rounded-full border border-slate-800 bg-slate-900 shadow-inner shadow-black/40 overflow-hidden flex items-center justify-center">
                                                         @if ($wali->user?->photo_url)
@@ -75,13 +75,13 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $wali->jenis_kelamin == 'L' ? 'bg-blue-500/20 text-blue-200 border border-blue-500/30' : 'bg-pink-500/20 text-pink-200 border border-pink-500/30' }}">
                                                     {{ $wali->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <div class="flex items-center space-x-3">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
+                                                <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.wali-kelas.edit', $wali->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 border border-slate-700 transition-colors">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>

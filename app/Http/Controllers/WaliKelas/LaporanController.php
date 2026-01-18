@@ -11,12 +11,13 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TahunAjaran;
 
 class LaporanController extends Controller
 {
     use BuildsMonthlyAttendance;
 
-    public function index()
+    public function index(Request $request)
     {
         $wali = Auth::user()?->waliKelas;
 
@@ -24,13 +25,29 @@ class LaporanController extends Controller
             abort(403, 'Akun Anda belum terhubung dengan data wali kelas.');
         }
 
+        // 1. Ambil semua tahun ajaran untuk dropdown
+        $semuaTahunAjaran = TahunAjaran::orderBy('tahun_ajaran', 'desc')->get();
+
+        // 2. Ambil tahun aktif
+        $tahunAktif = TahunAjaran::where('is_active', true)->first();
+
+        // 3. Tentukan tahun yang dipilih (default ke tahun aktif)
+        $tahunPilihanId = $request->input('tahun_ajaran_id', $tahunAktif?->id);
+
+        // 4. Filter kelas berdasarkan wali_kelas_id DAN tahun ajaran
         $daftarKelas = Kelas::with(['waliKelas', 'tahunAjaran'])
             ->where('wali_kelas_id', $wali->id)
+            ->when($tahunPilihanId, function($q) use ($tahunPilihanId) {
+                $q->where('tahun_ajaran_id', $tahunPilihanId);
+            })
             ->orderBy('nama_kelas', 'asc')
             ->get();
 
         return view('wali.laporan.index', [
             'daftarKelas' => $daftarKelas,
+            'semuaTahunAjaran' => $semuaTahunAjaran,
+            'tahunPilihanId' => $tahunPilihanId,
+            'tahunAktif' => $tahunAktif,
         ]);
     }
 

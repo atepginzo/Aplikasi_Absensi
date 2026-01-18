@@ -16,6 +16,29 @@
                 </div>
             @endif
 
+            {{-- Filter Tahun Ajaran --}}
+            @if(isset($semuaTahun) && $semuaTahun->count() > 0)
+            <form method="GET" action="{{ route('orang-tua.dashboard') }}">
+                <div class="flex flex-col sm:flex-row sm:items-end gap-4 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-2xl p-4">
+                    <div class="w-full sm:w-1/3">
+                        <label for="tahun_ajaran_id" class="block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Tahun Ajaran</label>
+                        <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="this.form.submit()" class="w-full rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:border-sky-500 focus:ring-sky-500">
+                            @foreach ($semuaTahun as $tahun)
+                                <option value="{{ $tahun->id }}" {{ isset($tahunDipilih) && $tahun->id === $tahunDipilih->id ? 'selected' : '' }}>
+                                    {{ $tahun->tahun_ajaran }} {{ $tahun->is_active ? '(Aktif)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if (isset($tahunAktif) && request('tahun_ajaran_id') && request('tahun_ajaran_id') != $tahunAktif->id)
+                        <a href="{{ route('orang-tua.dashboard') }}" class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-slate-300 rounded-xl border border-slate-700 hover:bg-slate-800 transition">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+            @endif
+
             @if ($siswa && $kelas)
                 @php
                     $todayDate = \Carbon\Carbon::today()->toDateString();

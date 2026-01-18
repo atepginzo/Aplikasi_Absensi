@@ -5,31 +5,39 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Kehadiran;
+use App\Models\TahunAjaran;
 use App\Traits\BuildsMonthlyAttendance;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class LaporanController extends Controller
 {
     use BuildsMonthlyAttendance;
-    /**
-     * Tampilkan daftar kelas untuk dipilih.
-     */
-    public function index()
+
+    public function index(Request $request)
     {
-        $daftarKelas = Kelas::with(['waliKelas', 'tahunAjaran'])
-            ->orderBy('nama_kelas', 'asc')
-            ->get();
+        $tahunAktif = TahunAjaran::where('is_active', true)->first();
+        $tahunPilihanId = $request->input('tahun_ajaran_id', $tahunAktif?->id);
+
+        $query = Kelas::with(['waliKelas', 'tahunAjaran'])
+            ->orderBy('nama_kelas', 'asc');
+
+        if ($tahunPilihanId) {
+            $query->where('tahun_ajaran_id', $tahunPilihanId);
+        }
+
+        $daftarKelas = $query->get();
+        $semuaTahunAjaran = TahunAjaran::orderBy('tahun_ajaran', 'desc')->get();
 
         return view('admin.laporan.index', [
             'daftarKelas' => $daftarKelas,
+            'semuaTahunAjaran' => $semuaTahunAjaran,
+            'tahunPilihanId' => $tahunPilihanId,
+            'tahunAktif' => $tahunAktif,
         ]);
     }
 
-    /**
-     * Tampilkan rekap kehadiran per tanggal untuk kelas tertentu.
-     */
     public function show($kelasId)
     {
         $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])
@@ -42,35 +50,25 @@ class LaporanController extends Controller
             'rekapKehadiran' => $rekapKehadiran,
         ]);
     }
-    /**
-     * Fungsi Baru: Export PDF
-     */
+
     public function exportPdf($kelasId)
     {
         $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])
             ->findOrFail($kelasId);
 
-        // 1. Ambil data rekap (menggunakan logika query yang sama)
         $rekapAbsensi = $this->getRekapData($kelas->id);
 
-        // 2. Load view PDF
         $pdf = Pdf::loadView('admin.laporan.pdf', [
             'kelas' => $kelas,
             'rekapAbsensi' => $rekapAbsensi,
             'tanggalCetak' => now()
         ]);
 
-        // 3. Download file
         return $pdf->download('Laporan_Absensi_' . $kelas->nama_kelas . '.pdf');
     }
 
-    /**
-     * Fungsi Helper: Query Rekap Kehadiran (Logika dari script lama Anda)
-     * Dipisahkan agar bisa dipakai di show() dan exportPdf()
-     */
     private function getRekapData($kelasId, $tanggalMulai = null, $tanggalSelesai = null)
     {
-        // Saya tetap menggunakan logika JOIN sesuai script Anda
         return Kehadiran::selectRaw(
             "tanggal,
             SUM(CASE WHEN status = 'Hadir' THEN 1 ELSE 0 END) AS jumlah_hadir,
@@ -92,9 +90,6 @@ class LaporanController extends Controller
             ->get();
     }
 
-    /**
-     * Rekap bulanan per siswa berdasarkan kelas.
-     */
     public function bulanan(Request $request)
     {
         $daftarKelas = Kelas::orderBy('nama_kelas', 'asc')->get();
@@ -125,9 +120,6 @@ class LaporanController extends Controller
         ]);
     }
 
-    /**
-     * Rekap bulanan khusus per kelas.
-     */
     public function bulananKelas(Request $request, $kelasId)
     {
         $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])->findOrFail($kelasId);
@@ -144,9 +136,6 @@ class LaporanController extends Controller
         ]);
     }
 
-    /**
-     * Export bulanan per kelas ke PDF.
-     */
     public function exportBulananPdf(Request $request, $kelasId)
     {
         $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])->findOrFail($kelasId);
@@ -165,9 +154,6 @@ class LaporanController extends Controller
         return $pdf->download('Rekap_Bulanan_' . $kelas->nama_kelas . '_' . $periode->format('Y_m') . '.pdf');
     }
 
-    /**
-     * Tampilkan detail kehadiran per siswa pada tanggal tertentu.
-     */
     public function detail($kelasId, $tanggal)
     {
         $kelas = Kelas::with([

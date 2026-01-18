@@ -195,6 +195,98 @@
         
         // Variabel untuk mencegah scan beruntun (debounce)
         let isProcessing = false;
+        const COOLDOWN_DURATION = 3000; // 3 detik cooldown
+
+        // Cooldown indicator element
+        const createCooldownIndicator = () => {
+            const indicator = document.createElement('div');
+            indicator.id = 'cooldown-indicator';
+            indicator.className = 'hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-amber-500/90 text-white font-semibold text-sm shadow-lg backdrop-blur-sm';
+            indicator.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span id="cooldown-text">Tunggu 3 detik...</span>
+                </div>
+            `;
+            document.body.appendChild(indicator);
+            return indicator;
+        };
+
+        const cooldownIndicator = createCooldownIndicator();
+
+        const showCooldownIndicator = () => {
+            let countdown = 3;
+            const cooldownText = document.getElementById('cooldown-text');
+            cooldownIndicator.classList.remove('hidden');
+            
+            const updateCountdown = () => {
+                if (countdown > 0) {
+                    cooldownText.textContent = `Tunggu ${countdown} detik...`;
+                    countdown--;
+                    setTimeout(updateCountdown, 1000);
+                }
+            };
+            updateCountdown();
+        };
+
+        const hideCooldownIndicator = () => {
+            cooldownIndicator.classList.add('hidden');
+        };
+
+        // Variabel untuk menyimpan lokasi user
+        let userLocation = null;
+        let locationPermissionDenied = false;
+
+        // Fungsi untuk mendapatkan lokasi user
+        const getUserLocation = () => {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation tidak didukung oleh browser Anda.'));
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy
+                        };
+                        console.log('User location:', userLocation);
+                        resolve(userLocation);
+                    },
+                    (error) => {
+                        let errorMessage = 'Gagal mendapatkan lokasi.';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = 'Izin lokasi ditolak. Wajib mengizinkan akses lokasi untuk melakukan absensi.';
+                                locationPermissionDenied = true;
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = 'Lokasi tidak tersedia.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = 'Waktu permintaan lokasi habis.';
+                                break;
+                        }
+                        reject(new Error(errorMessage));
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        };
+
+        // Request lokasi saat halaman dimuat
+        getUserLocation().catch(err => {
+            console.warn('Initial location request failed:', err.message);
+        });
 
         function onScanSuccess(decodedText, decodedResult) {
             // Jika sedang memproses, abaikan scan baru
@@ -204,39 +296,78 @@
             document.getElementById('loading-indicator').classList.remove('hidden');
             document.getElementById('empty-state').classList.add('hidden');
             
+            // Tampilkan cooldown indicator
+            showCooldownIndicator();
+            
             // Mainkan suara beep
             scanSound.play().catch(e => console.log('Audio play failed:', e));
 
             console.log(`Scan result: ${decodedText}`);
 
-            // KIRIM DATA KE SERVER VIA FETCH API
-            fetch("{{ route('admin.absensi.store') }}", {
+            // Ambil lokasi sebelum mengirim data
+            getUserLocation()
+                .then(location => {
+                    // Kirim data dengan lokasi
+                    return sendAbsensiRequest(decodedText, location.latitude, location.longitude);
+                })
+                .catch(locationError => {
+                    // Jika lokasi ditolak, tampilkan error
+                    if (locationPermissionDenied) {
+                        showResult({
+                            status: 'error',
+                            message: 'Wajib mengizinkan akses lokasi untuk melakukan absensi. Silakan refresh halaman dan izinkan akses lokasi.'
+                        });
+                        isProcessing = false;
+                        document.getElementById('loading-indicator').classList.add('hidden');
+                        hideCooldownIndicator();
+                        return;
+                    }
+                    
+                    // Jika error lokasi lain, coba kirim tanpa lokasi (sebagai fallback)
+                    console.warn('Location error, sending without coordinates:', locationError.message);
+                    return sendAbsensiRequest(decodedText, null, null);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showResult({
+                        status: 'error',
+                        message: 'Terjadi kesalahan sistem.'
+                    });
+                })
+                .finally(() => {
+                    // Beri jeda 3 detik sebelum bisa scan lagi
+                    setTimeout(() => {
+                        isProcessing = false;
+                        document.getElementById('loading-indicator').classList.add('hidden');
+                        hideCooldownIndicator();
+                    }, COOLDOWN_DURATION);
+                });
+        }
+
+        // Fungsi untuk mengirim request absensi ke server
+        function sendAbsensiRequest(qrToken, latitude, longitude) {
+            const requestBody = {
+                qrcode_token: qrToken
+            };
+
+            // Tambahkan koordinat jika tersedia
+            if (latitude !== null && longitude !== null) {
+                requestBody.latitude = latitude;
+                requestBody.longitude = longitude;
+            }
+
+            return fetch("{{ route('admin.absensi.store') }}", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrfToken
                 },
-                body: JSON.stringify({
-                    qrcode_token: decodedText
-                })
+                body: JSON.stringify(requestBody)
             })
             .then(response => response.json())
             .then(data => {
                 showResult(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showResult({
-                    status: 'error',
-                    message: 'Terjadi kesalahan sistem.'
-                });
-            })
-            .finally(() => {
-                // Beri jeda 2 detik sebelum bisa scan lagi
-                setTimeout(() => {
-                    isProcessing = false;
-                    document.getElementById('loading-indicator').classList.add('hidden');
-                }, 2000);
+                return data;
             });
         }
 

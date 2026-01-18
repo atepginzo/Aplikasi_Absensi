@@ -6,19 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Kehadiran;
+use App\Models\TahunAjaran;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ManualAbsensiController extends Controller
 {
-    /**
-     * Tampilkan daftar kelas untuk input manual.
-     */
-    public function index()
+    public function index(Request $request)
     {
+        $tahunAktif = TahunAjaran::where('is_active', true)->first();
+        $tahunPilihanId = $request->input('tahun_ajaran_id', $tahunAktif?->id);
+
         $daftarKelasQuery = Kelas::with(['waliKelas', 'tahunAjaran'])
             ->orderBy('nama_kelas', 'asc');
+
+        if ($tahunPilihanId) {
+            $daftarKelasQuery->where('tahun_ajaran_id', $tahunPilihanId);
+        }
 
         $user = Auth::user();
         if ($user && $user->role === 'wali_kelas') {
@@ -31,15 +36,16 @@ class ManualAbsensiController extends Controller
         }
 
         $daftarKelas = $daftarKelasQuery->get();
+        $semuaTahunAjaran = TahunAjaran::orderBy('tahun_ajaran', 'desc')->get();
 
         return view('admin.absensi.manual.index', [
             'daftarKelas' => $daftarKelas,
+            'semuaTahunAjaran' => $semuaTahunAjaran,
+            'tahunPilihanId' => $tahunPilihanId,
+            'tahunAktif' => $tahunAktif,
         ]);
     }
 
-    /**
-     * Tampilkan form input manual untuk kelas tertentu dan tanggal tertentu.
-     */
     public function show(Request $request, $kelasId)
     {
         $kelas = Kelas::with(['waliKelas', 'tahunAjaran'])
@@ -80,9 +86,6 @@ class ManualAbsensiController extends Controller
         ]);
     }
 
-    /**
-     * Simpan atau perbarui absensi manual untuk kelas tertentu.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([

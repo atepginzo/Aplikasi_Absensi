@@ -10,6 +10,26 @@
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <form method="GET" action="{{ route('admin.absensi.manual.index') }}" class="mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end gap-4 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-2xl p-4">
+                    <div class="w-full sm:w-1/4">
+                        <label for="tahun_ajaran_id" class="block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Tahun Ajaran</label>
+                        <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="this.form.submit()" class="w-full rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:border-sky-500 focus:ring-sky-500">
+                            @foreach ($semuaTahunAjaran as $tahun)
+                                <option value="{{ $tahun->id }}" {{ (string) $tahun->id === (string) $tahunPilihanId ? 'selected' : '' }}>
+                                    {{ $tahun->tahun_ajaran }} {{ $tahun->is_active ? '(Aktif)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if ($tahunAktif && request('tahun_ajaran_id') && request('tahun_ajaran_id') != $tahunAktif->id)
+                        <a href="{{ route('admin.absensi.manual.index') }}" class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-slate-300 rounded-xl border border-slate-700 hover:bg-slate-800 transition">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+
             <div class="bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-800 shadow-2xl shadow-black/40 p-8">
                 @if ($daftarKelas->isEmpty())
                     <div class="text-center py-16">

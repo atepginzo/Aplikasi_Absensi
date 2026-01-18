@@ -24,9 +24,9 @@
                 <h2 class="font-bold text-2xl text-slate-50 leading-tight">Absensi Manual {{ $kelas->nama_kelas }}</h2>
                 <p class="mt-1 text-sm text-slate-400"> {{ $tanggalLabel }} • Wali Kelas {{ $kelas->waliKelas->nama_lengkap ?? '-' }}</p>
             </div>
-            <a href="{{ route('admin.absensi.manual.index') }}" class="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800 transition-colors">
+            <a href="{{ route('admin.absensi.manual.index') }}" class="inline-flex items-center px-5 py-2.5 bg-slate-800 border-2 border-slate-700 rounded-xl font-semibold text-sm text-slate-200 hover:border-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
                 Kembali ke Daftar Kelas
             </a>
@@ -96,10 +96,10 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                                 <thead class="bg-slate-900/60">
                                     <tr>
-                                        <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide w-12">No</th>
-                                        <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide w-32">NIS</th>
+                                        <th class="px-4 py-3 text-center font-semibold text-slate-400 uppercase tracking-wide w-12">No</th>
+                                        <th class="px-4 py-3 text-center font-semibold text-slate-400 uppercase tracking-wide w-32">NIS</th>
                                         <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide">Nama Siswa</th>
-                                        <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide">Status</th>
+                                        <th class="px-4 py-3 text-center font-semibold text-slate-400 uppercase tracking-wide">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-slate-950/40">
@@ -109,10 +109,10 @@
                                             $currentStatus = old('absensi.' . $siswa->id, optional($kehadiranMap->get($siswa->id))->status);
                                         @endphp
                                         <tr class="hover:bg-slate-900/40 transition-colors">
-                                            <td class="px-4 py-4 text-slate-400">{{ $loop->iteration }}</td>
-                                            <td class="px-4 py-4 text-slate-200 font-medium">{{ $siswa->nis }}</td>
-                                            <td class="px-4 py-4 text-slate-100 font-semibold">{{ $siswa->nama_siswa }}</td>
-                                            <td class="px-4 py-4">
+                                            <td class="px-4 py-4 text-center text-slate-400">{{ $loop->iteration }}</td>
+                                            <td class="px-4 py-4 text-center text-slate-200 font-medium">{{ $siswa->nis }}</td>
+                                            <td class="px-4 py-4 text-left text-slate-100 font-semibold">{{ $siswa->nama_siswa }}</td>
+                                            <td class="px-4 py-4 text-center">
                                                 <div class="flex flex-wrap gap-2">
                                                     @foreach ($statusOptions as $status)
                                                         @php

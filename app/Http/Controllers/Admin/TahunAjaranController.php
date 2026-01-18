@@ -44,11 +44,15 @@ class TahunAjaranController extends Controller
             'tahun_ajaran.unique' => 'Tahun ajaran ini sudah ada di database.'
         ]);
 
-        // 2. Jika validasi lolos, simpan data ke database
+        // 2. Reset semua tahun ajaran jika yang baru akan diaktifkan
+        if ($request->has('is_active')) {
+            TahunAjaran::query()->update(['is_active' => false]);
+        }
+
+        // 3. Jika validasi lolos, simpan data ke database
         TahunAjaran::create([
             'tahun_ajaran' => $request->tahun_ajaran,
             // Cek apakah checkbox 'is_active' dicentang atau tidak
-            // $request->has('is_active') akan bernilai 'true' jika dicentang, dan 'false' jika tidak
             'is_active' => $request->has('is_active') 
         ]);
 
@@ -105,7 +109,12 @@ class TahunAjaranController extends Controller
             'tahun_ajaran.unique' => 'Tahun ajaran ini sudah ada.'
         ]);
 
-        // 2. Update data di database
+        // 2. Reset semua tahun ajaran jika yang ini akan diaktifkan
+        if ($request->has('is_active')) {
+            TahunAjaran::query()->update(['is_active' => false]);
+        }
+
+        // 3. Update data di database
         $tahunAjaran->update([
             'tahun_ajaran' => $request->tahun_ajaran,
             'is_active' => $request->has('is_active')

@@ -45,22 +45,22 @@
                             <table class="min-w-full divide-y divide-slate-800">
                                 <thead class="bg-slate-800/50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Tahun Ajaran</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Status</th>
-                                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">No.</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Tahun Ajaran</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-slate-900/50 divide-y divide-slate-800">
                                     @forelse ($semuaTahunAjaran as $key => $tahun)
                                         <tr class="hover:bg-slate-800/50 transition-colors duration-150 {{ $key % 2 == 0 ? 'bg-slate-900/30' : 'bg-slate-900/50' }}">
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="text-sm font-medium text-slate-300">{{ ($semuaTahunAjaran->firstItem() ?? 0) + $key }}</span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 <span class="text-sm font-semibold text-slate-200">{{ $tahun->tahun_ajaran }}</span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                                 @if ($tahun->is_active)
                                                     <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -74,8 +74,8 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <div class="flex items-center space-x-3">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
+                                                <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.tahun-ajaran.show', $tahun->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-200 bg-slate-800/70 rounded-lg border border-slate-700 hover:bg-slate-700/70 transition-colors">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

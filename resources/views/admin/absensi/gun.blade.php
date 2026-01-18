@@ -73,20 +73,48 @@
             const historyLimit = 5;
             let toastTimer = null;
             let isSubmitting = false;
+            let cooldownTimer = null;
+            const COOLDOWN_DURATION = 3000; // 3 detik cooldown
             const history = [];
 
+            // Wrapper input container
+            const inputContainer = scannerInput.parentElement;
+
             const enforceFocus = () => {
-                scannerInput.focus();
+                if (!scannerInput.disabled) {
+                    scannerInput.focus();
+                }
+            };
+
+            const setCooldownState = (active) => {
+                if (active) {
+                    // Aktifkan cooldown
+                    scannerInput.disabled = true;
+                    scannerInput.placeholder = 'Tunggu sebentar...';
+                    inputContainer.classList.remove('border-slate-800', 'focus-within:border-sky-500/60');
+                    inputContainer.classList.add('border-amber-500/60', 'bg-amber-500/5');
+                    scannerInput.classList.add('text-amber-400');
+                } else {
+                    // Nonaktifkan cooldown
+                    scannerInput.disabled = false;
+                    scannerInput.placeholder = 'Fokus otomatis. Tembakkan Gun Scanner di sini';
+                    inputContainer.classList.remove('border-amber-500/60', 'bg-amber-500/5');
+                    inputContainer.classList.add('border-slate-800', 'focus-within:border-sky-500/60');
+                    scannerInput.classList.remove('text-amber-400');
+                    enforceFocus();
+                }
             };
 
             document.addEventListener('click', (event) => {
-                if (event.target !== scannerInput) {
+                if (event.target !== scannerInput && !scannerInput.disabled) {
                     setTimeout(enforceFocus, 60);
                 }
             });
 
             scannerInput.addEventListener('blur', () => {
-                setTimeout(enforceFocus, 50);
+                if (!scannerInput.disabled) {
+                    setTimeout(enforceFocus, 50);
+                }
             });
 
             const playBeep = (tone = 'success') => {
@@ -233,6 +261,10 @@
                     return;
                 }
                 isSubmitting = true;
+                
+                // Aktifkan cooldown state segera setelah scan
+                setCooldownState(true);
+                
                 try {
                     const response = await fetch(fetchUrl, {
                         method: 'POST',
@@ -256,7 +288,16 @@
                 } finally {
                     scannerInput.value = '';
                     isSubmitting = false;
-                    setTimeout(enforceFocus, 50);
+                    
+                    // Clear existing cooldown timer jika ada
+                    if (cooldownTimer) {
+                        clearTimeout(cooldownTimer);
+                    }
+                    
+                    // Set cooldown timer - 3 detik sebelum bisa scan lagi
+                    cooldownTimer = setTimeout(() => {
+                        setCooldownState(false);
+                    }, COOLDOWN_DURATION);
                 }
             };
 

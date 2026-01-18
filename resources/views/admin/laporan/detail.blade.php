@@ -16,9 +16,9 @@
                 <p class="mt-1 text-sm text-slate-400">Kelas {{ $kelas->nama_kelas }} • Tahun Ajaran {{ $kelas->tahunAjaran->tahun_ajaran ?? '-' }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('admin.laporan.show', $kelas->id) }}" class="inline-flex items-center rounded-xl border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-slate-800 transition">
+                <a href="{{ route('admin.laporan.show', $kelas->id) }}" class="inline-flex items-center px-5 py-2.5 bg-slate-800 border-2 border-slate-700 rounded-xl font-semibold text-sm text-slate-200 hover:border-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                     Kembali ke Rekap
                 </a>
@@ -49,13 +49,14 @@
                     <p class="text-sm text-slate-400">Status kehadiran hanya untuk tampilan (read only).</p>
                 </div>
 
-                <div class="overflow-x-auto">
+                {{-- Desktop Table View --}}
+                <div class="hidden sm:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                         <thead class="bg-slate-900/70">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide">No</th>
+                                <th class="px-4 py-3 text-center font-semibold text-slate-400 uppercase tracking-wide">No</th>
                                 <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide">Nama Siswa</th>
-                                <th class="px-4 py-3 text-left font-semibold text-slate-400 uppercase tracking-wide">Jenis Kelamin</th>
+                                <th class="px-4 py-3 text-center font-semibold text-slate-400 uppercase tracking-wide">Jenis Kelamin</th>
                                 <th class="px-4 py-3 text-center font-semibold text-slate-400 uppercase tracking-wide">Status Kehadiran</th>
                             </tr>
                         </thead>
@@ -67,9 +68,9 @@
                                     $label = $status ?? 'Belum Ada Data';
                                 @endphp
                                 <tr class="hover:bg-slate-900/40 transition-colors">
-                                    <td class="px-4 py-3 text-slate-400">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-3 text-slate-100 font-semibold">{{ $siswa->nama_siswa }}</td>
-                                    <td class="px-4 py-3 text-slate-300">
+                                    <td class="px-4 py-3 text-center text-slate-400">{{ $index + 1 }}</td>
+                                    <td class="px-4 py-3 text-left text-slate-100 font-semibold">{{ $siswa->nama_siswa }}</td>
+                                    <td class="px-4 py-3 text-center text-slate-300">
                                         @if ($siswa->jenis_kelamin === 'L')
                                             Laki-laki
                                         @elseif ($siswa->jenis_kelamin === 'P')
@@ -91,6 +92,33 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Mobile Card View --}}
+                <div class="sm:hidden p-4 space-y-3">
+                    @forelse ($daftarSiswa as $index => $siswa)
+                        @php
+                            $status = optional($kehadiranPadaTanggal->get($siswa->id))->status;
+                            $badgeClass = $statusStyles[$status] ?? 'bg-slate-800/70 text-slate-300 border border-slate-700';
+                            $label = $status ?? 'Belum Ada Data';
+                        @endphp
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs text-slate-500">#{{ $index + 1 }}</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $badgeClass }}">
+                                    {{ $label }}
+                                </span>
+                            </div>
+                            <p class="text-base font-semibold text-slate-50 mb-2">{{ $siswa->nama_siswa }}</p>
+                            <p class="text-sm text-slate-400">
+                                {{ $siswa->jenis_kelamin === 'L' ? 'Laki-laki' : ($siswa->jenis_kelamin === 'P' ? 'Perempuan' : '-') }}
+                            </p>
+                        </div>
+                    @empty
+                        <div class="text-center py-8">
+                            <p class="text-sm text-slate-400">Belum ada siswa pada kelas ini.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
